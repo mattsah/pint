@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "syntax-cli": "0.1.26"
+  },
+  "scripts": {
+    "prepare": "node_modules/.bin/syntax-cli -g pint.cpp.lex -m lalr1 -o src/parser.h"
+  }
+}

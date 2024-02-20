@@ -1,0 +1,6 @@
+unit io;
+
+const writeln: function(line: string): void
+	begin
+
+	end;

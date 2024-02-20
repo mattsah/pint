@@ -1,0 +1,14 @@
+const string<T:char>: class()
+	begin
+		private:
+
+
+		public:
+			{
+				Formats a string
+			}
+			const format: function(...args: mixed): self
+				begin
+
+				end;
+	end;
