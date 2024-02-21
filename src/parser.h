@@ -97,7 +97,8 @@
 		~Exp() {}
 	};
 
-	using Value = std::shared_ptr<Exp>;  // clang-format on
+	using Value = bool;
+	// std::shared_ptr<Exp>;  // clang-format on
 
 namespace syntax {
 
@@ -122,7 +123,16 @@ class Tokenizer;
 enum class TokenType {
   __EMPTY = -1,
   // clang-format off
-  __EOF = 1
+  UNIT = 9,
+  IDENTIFIER = 10,
+  SEMICOLON = 11,
+  COMMENT = 12,
+  USES = 13,
+  INT = 14,
+  FLOAT = 15,
+  STRING = 16,
+  TOKEN_TYPE_17 = 17,
+  __EOF = 18
   // clang-format on
 };
 
@@ -355,7 +365,7 @@ class Tokenizer {
    * Lexical rules.
    */
   // clang-format off
-  static constexpr size_t LEX_RULES_COUNT = 4;
+  static constexpr size_t LEX_RULES_COUNT = 9;
   static std::array<LexRule, LEX_RULES_COUNT> lexRules_;
   static std::map<TokenizerState, std::vector<size_t>> lexRulesByStartConditions_;
   // clang-format on
@@ -405,19 +415,39 @@ std::string Tokenizer::__EOF("$");
 
 // clang-format off
 inline TokenType _lexRule1(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::__EMPTY;
+return TokenType::TOKEN_TYPE_17;
 }
 
 inline TokenType _lexRule2(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::INT;
+return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule3(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::FLOAT;
+return TokenType::INT;
 }
 
 inline TokenType _lexRule4(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IDENTIFIER;
+return TokenType::FLOAT;
+}
+
+inline TokenType _lexRule5(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::SYMBOL;
+}
+
+inline TokenType _lexRule6(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::STRING;
+}
+
+inline TokenType _lexRule7(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::OP;
+}
+
+inline TokenType _lexRule8(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::CMP;
+}
+
+inline TokenType _lexRule9(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::CTRL;
 }
 // clang-format on
 
@@ -426,12 +456,17 @@ return TokenType::IDENTIFIER;
 
 // clang-format off
 std::array<LexRule, Tokenizer::LEX_RULES_COUNT> Tokenizer::lexRules_ = {{
-  {std::regex(R"(^\s+)"), &_lexRule1},
-  {std::regex(R"(^[0-9])"), &_lexRule2},
-  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule3},
-  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule4}
+  {std::regex(R"(^,)"), &_lexRule1},
+  {std::regex(R"(^\s+)"), &_lexRule2},
+  {std::regex(R"(^[0-9])"), &_lexRule3},
+  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule4},
+  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule5},
+  {std::regex(R"(^{STRING})"), &_lexRule6},
+  {std::regex(R"(^\+|-|\*|\/|=)"), &_lexRule7},
+  {std::regex(R"(^==|>=|<=|<|>|<>)"), &_lexRule8},
+  {std::regex(R"(^:|;|\(|\)|\.|,)"), &_lexRule9}
 }};
-std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3}}};
+std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3, 4, 5, 6, 7, 8}}};
 // clang-format on
 
 #endif
@@ -633,10 +668,10 @@ class parser {
   }
 
   // clang-format off
-  static constexpr size_t PRODUCTIONS_COUNT = 2;
+  static constexpr size_t PRODUCTIONS_COUNT = 14;
   static std::array<Production, PRODUCTIONS_COUNT> productions_;
 
-  static constexpr size_t ROWS_COUNT = 2;
+  static constexpr size_t ROWS_COUNT = 16;
   static std::array<Row, ROWS_COUNT> table_;
   // clang-format on
 };
@@ -655,11 +690,175 @@ auto __ = _1;
 PUSH_VR();
 
 }
+
+void _handler2(yyparse& parser) {
+// Semantic action prologue.
+parser.valuesStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler3(yyparse& parser) {
+// Semantic action prologue.
+parser.valuesStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler4(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+parser.tokensStack.pop_back();
+parser.tokensStack.pop_back();
+
+auto __ = true;
+		printf("Unit Statement");
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler5(yyparse& parser) {
+// Semantic action prologue.
+
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler6(yyparse& parser) {
+// Semantic action prologue.
+parser.valuesStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler7(yyparse& parser) {
+// Semantic action prologue.
+parser.valuesStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler8(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+
+auto __ = true;
+		printf("Comment Found");
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler9(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
+parser.tokensStack.pop_back();
+
+auto __ = true;
+		printf("Use Statement");
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler10(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler11(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler12(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler13(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler14(yyparse& parser) {
+// Semantic action prologue.
+parser.tokensStack.pop_back();
+
+auto __ = true;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
 // clang-format on
 
 // clang-format off
 std::array<Production, yyparse::PRODUCTIONS_COUNT> yyparse::productions_ = {{{-1, 1, &_handler1},
-{0, 0, &_handler2}}};
+{0, 1, &_handler2},
+{0, 1, &_handler3},
+{1, 3, &_handler4},
+{2, 0, &_handler5},
+{2, 1, &_handler6},
+{2, 1, &_handler7},
+{3, 1, &_handler8},
+{4, 3, &_handler9},
+{5, 1, &_handler10},
+{5, 3, &_handler11},
+{6, 1, &_handler12},
+{7, 1, &_handler13},
+{8, 1, &_handler14}}};
 // clang-format on
 
 // ------------------------------------------------------------------
@@ -667,8 +866,22 @@ std::array<Production, yyparse::PRODUCTIONS_COUNT> yyparse::productions_ = {{{-1
 
 // clang-format off
 std::array<Row, yyparse::ROWS_COUNT> yyparse::table_ = {
-    Row {{0, {TE::Transit, 1}}, {1, {TE::Reduce, 1}}},
-    Row {{1, {TE::Accept, 0}}}
+    Row {{0, {TE::Transit, 1}}, {1, {TE::Transit, 2}}, {2, {TE::Transit, 3}}, {3, {TE::Transit, 5}}, {4, {TE::Transit, 6}}, {9, {TE::Shift, 4}}, {12, {TE::Shift, 7}}, {13, {TE::Shift, 8}}, {18, {TE::Reduce, 4}}},
+    Row {{18, {TE::Accept, 0}}},
+    Row {{18, {TE::Reduce, 1}}},
+    Row {{18, {TE::Reduce, 2}}},
+    Row {{10, {TE::Shift, 9}}},
+    Row {{18, {TE::Reduce, 5}}},
+    Row {{18, {TE::Reduce, 6}}},
+    Row {{18, {TE::Reduce, 7}}},
+    Row {{5, {TE::Transit, 11}}, {10, {TE::Shift, 12}}},
+    Row {{11, {TE::Shift, 10}}},
+    Row {{18, {TE::Reduce, 3}}},
+    Row {{11, {TE::Shift, 13}}, {17, {TE::Shift, 14}}},
+    Row {{11, {TE::Reduce, 9}}, {17, {TE::Reduce, 9}}},
+    Row {{18, {TE::Reduce, 8}}},
+    Row {{10, {TE::Shift, 15}}},
+    Row {{11, {TE::Reduce, 10}}, {17, {TE::Reduce, 10}}}
 };
 // clang-format on
 

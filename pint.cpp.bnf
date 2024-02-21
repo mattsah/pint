@@ -1,0 +1,124 @@
+%{
+	#include <string>
+	#include <initializer_list>
+
+	/**
+	* Expression type.
+	*/
+	enum class ExpType {
+		Number,
+		String,
+		Symbol,
+		List,
+	};
+
+	/**
+	* Expression.
+	*/
+	class Exp {
+		public:
+		ExpType type;
+
+		int number;
+		std::string string;
+		std::vector<std::shared_ptr<Exp>> list;
+
+		// Numbers:
+		Exp(int number) : type(ExpType::Number), number(number) {}
+
+		// Strings, Symbols:
+		Exp(std::string& strVal) {
+			if (strVal[0] == '"') {
+				type = ExpType::String;
+				string = strVal.substr(1, strVal.size() - 2);
+			} else {
+				type = ExpType::Symbol;
+				string = strVal;
+			}
+		}
+
+		// Lists:
+		Exp(std::vector<std::shared_ptr<Exp>> list) : type(ExpType::List), list(list) {}
+
+		// List init:
+		Exp(const std::initializer_list<std::shared_ptr<Exp>> &list) : type(ExpType::List), list(list) {}
+
+		~Exp() {}
+	};
+
+	using Value = bool;
+	// std::shared_ptr<Exp>;
+%}
+
+%start code
+
+%%
+
+code
+	: unit_stmt {
+		$$ = true;
+	}
+	| header_stmt {
+		$$ = true;
+	}
+;
+
+unit_stmt
+	: UNIT IDENTIFIER SEMICOLON {
+		$$ = true;
+		printf("Unit Statement");
+	}
+;
+
+header_stmt
+	: {
+		$$ = true;
+	}
+	| comment {
+		$$ = true;
+	}
+	| uses_stmt {
+		$$ = true;
+	}
+;
+
+comment
+	: COMMENT {
+		$$ = true;
+		printf("Comment Found");
+	}
+;
+
+uses_stmt
+	: USES ilist SEMICOLON {
+		$$ = true;
+		printf("Use Statement");
+	}
+;
+
+ilist
+	: IDENTIFIER {
+		$$ = true;
+	}
+	| ilist ',' IDENTIFIER {
+		$$ = true;
+	}
+;
+
+int
+	: INT {
+		$$ = true;
+	}
+;
+
+float
+	: FLOAT {
+		$$ = true;
+	}
+;
+
+string
+	: STRING {
+		$$ = true;
+	}
+;
