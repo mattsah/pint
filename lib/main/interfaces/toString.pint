@@ -1,0 +1,6 @@
+unit main;
+
+const toString:interface()
+	begin
+		const _toString(): string;
+	end;

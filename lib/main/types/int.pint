@@ -1,0 +1,31 @@
+unit main;
+
+const int: class(number, callable)
+	begin
+		const function _toInt(): int
+			begin
+				return this;
+			end;
+
+		const function _toFloat(): float
+			begin
+				return float(this);
+			end;
+
+		const function _toString(): string
+			begin
+				return string(this);
+			end;
+
+		const function _call(value: value): int
+			begin
+				case typeof(value) is
+					'int':
+						return this;
+					'float':
+						return: int(sizeof(value)) round(value);
+					'char':
+						return: int(sizeof(char)) value;
+				end;
+			end;
+	end;

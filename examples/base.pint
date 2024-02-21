@@ -7,18 +7,26 @@ uses io;
 }
 const main: function(): int
 	begin
-		var x: int; // Declare x as an int
-		var y: int;
-		var z: float;
+		var x: int;   // Declare x as an int
+		var y: float; // Declare y as a float
+		var z: float; // Declare z as a float
 
 		x = 2;
-		y = 2;
-		z = x / y;
+		y = 2.5;
+		z = sum(x, y);
 
-		if y + 2 == 5
-			io.writeLn("failed basic math");
+		return 0; // return and exit the function
+	end;
+
+{
+	Here we have a function that takes two numbers
+}
+const sum: function(x: number, y: number): number
+	begin
+		if x >= y then
+			return = x + y; // set return value, but do not exit
 		else
-			io.writeLn('%d + %d // = %d'.format(x, y, x + y));
+			return = y + x;
 
-		return 0;
+		io.writeLn('Calculated the sum of x + y @ %n'.format(return));
 	end;

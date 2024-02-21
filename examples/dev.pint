@@ -1,0 +1,11 @@
+unit main;
+
+uses io, mamer, thing;
+
+{
+	The main function is the entry point.
+}
+
+{
+	Here we have a function that takes two numbers
+}

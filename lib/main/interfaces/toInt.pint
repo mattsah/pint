@@ -1,0 +1,6 @@
+unit main;
+
+const toInt:interface()
+	begin
+		const _toInt(size: int): int;
+	end;

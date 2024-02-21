@@ -1,0 +1,3 @@
+unit main;
+
+const number:interface(toString, toInt, toFloat);

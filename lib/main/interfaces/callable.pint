@@ -1,0 +1,6 @@
+unit main;
+
+const number:interface()
+	begin
+		const _call:function(): value;
+	end;
