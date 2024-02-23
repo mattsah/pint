@@ -1,6 +1,0 @@
-unit main;
-
-const toFloat:interface()
-	begin
-		const _toFloat(size: int): float;
-	end;

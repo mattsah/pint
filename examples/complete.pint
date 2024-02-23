@@ -1,0 +1,149 @@
+{
+	You must declare a unit.
+}
+unit crm;
+
+{
+	You can import other units, unit members, and alias them.
+}
+uses
+	io,                                 // import entire unit
+	email.Transport,                    // import a single unit member
+	mailgun.Transport as EmailTransport // import with an alias
+;
+
+{
+	Enumerators
+}
+register Days: type() = (
+	MON,
+	TUE,
+	WED,
+	THU,
+	FRI,
+	SAT,
+	SUN
+);
+
+
+{
+	Records (like structs)
+}
+register Being: record() = (
+	name: string,
+	age: cardinal
+);
+
+
+{
+	Extending Records
+}
+register Emailable: record(Being) = (
+	email: string
+);
+
+
+{
+	Interfaces
+}
+register canEmail: interface()
+begin
+	const setEmailTransport: function(transport: Transport);
+	const email: function(subject, message: string);
+end;
+
+
+{
+	Implementations (triats) can implement interfaces, can include records
+}
+register doEmail: implementation(hasEmail, canEmail)
+begin
+	private:
+		const transport: Transport;
+
+	public:
+		{
+
+		}
+		const setEmailTransport: function(var transport: Transport)
+		begin
+			this.transport = transport;
+		end;
+
+		{
+
+		}
+		const email: function(subject, message: string): ?Err
+		begin
+			if !this.email then
+				result = new Err('Cannot send email, email not set');
+
+			else
+				this.transport
+					.setSubject(subject)
+					.setBody(message)
+					.send((
+						name: this.name,
+						email: this.email
+					))
+				;
+		end;
+end;
+
+
+{
+	Classes can implement interfaces, include records, and use implementations. In the example
+	below we use the StudentSpeaker implementation, which in turn means means that this includes
+	the isStudent record, and recursively the isBeing record, as well as implementing the
+	canSpeak interface.
+}
+
+register Person: class(doEmail)
+begin
+	private:
+		var friends: Person[];
+
+	protected:
+
+	public:
+		{
+
+		}
+		constructor(name: string(255); age: integer(1); email: string)
+		begin
+			this.name  = name;
+			this.age   = age;
+			this.email = email;
+		end;
+
+		{
+
+		}
+		const befriend: function(...friends: Person): self
+		begin
+			// friends.each(function(friend: Person): void
+			// 	begin
+			// 		this.friends.add(friend);
+			// 	end
+			// );
+		end;
+
+		{
+
+		}
+		const share: function(subject, message: string): ?Err
+		begin
+			var errs: Err[];
+
+			for var friend: Person in this.friends then
+			begin
+				if var err: Err = friend.email@doEmail(subject, message) then
+					errs[] = err;
+			end;
+
+			if errors.length() then
+				return new Err('Could not share to %d friends'.format(errors.length()), (
+					errs: errs
+				));
+		end;
+end;
