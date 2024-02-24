@@ -7,17 +7,17 @@ unit app;
 	Import examples
 }
 
-// Single line
+{ Single line }
 uses io;
 
-// Multi line
+{ Multi line }
 uses
-	// Entire unit
+	{ Entire unit }
 	math,
-	// Unit as alias
+	{ Unit as alias }
 	regex as rx,
-	// Individual identifier
+	{ Individual identifier }
 	app\models.Person,
-	// Individual identifier as alias
+	{ Individual identifier as alias }
 	app\models.PersonRepository as People
 ;
