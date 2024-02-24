@@ -4,6 +4,7 @@ KEYWORDS unit|uses|const|var|begin|end|if|then|else|return
 
 \s+							%empty
 \{[^\}]*\}					%empty
+\/\/.*\n					%empty
 unit						UNIT
 uses						USES
 const						CONST

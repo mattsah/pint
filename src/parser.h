@@ -334,7 +334,7 @@ class Tokenizer {
    * Lexical rules.
    */
   // clang-format off
-  static constexpr size_t LEX_RULES_COUNT = 25;
+  static constexpr size_t LEX_RULES_COUNT = 26;
   static std::array<LexRule, LEX_RULES_COUNT> lexRules_;
   static std::map<TokenizerState, std::vector<size_t>> lexRulesByStartConditions_;
   // clang-format on
@@ -404,82 +404,86 @@ return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule6(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::UNIT;
+return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule7(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::USES;
+return TokenType::UNIT;
 }
 
 inline TokenType _lexRule8(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CONST;
+return TokenType::USES;
 }
 
 inline TokenType _lexRule9(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::VAR;
+return TokenType::CONST;
 }
 
 inline TokenType _lexRule10(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::BEGIN;
+return TokenType::VAR;
 }
 
 inline TokenType _lexRule11(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IF;
+return TokenType::BEGIN;
 }
 
 inline TokenType _lexRule12(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::THEN;
+return TokenType::IF;
 }
 
 inline TokenType _lexRule13(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::ELSE;
+return TokenType::THEN;
 }
 
 inline TokenType _lexRule14(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CASE;
+return TokenType::ELSE;
 }
 
 inline TokenType _lexRule15(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IS;
+return TokenType::CASE;
 }
 
 inline TokenType _lexRule16(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::END;
+return TokenType::IS;
 }
 
 inline TokenType _lexRule17(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CONSTRUCTOR;
+return TokenType::END;
 }
 
 inline TokenType _lexRule18(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::FUNCTION;
+return TokenType::CONSTRUCTOR;
 }
 
 inline TokenType _lexRule19(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::BOOL;
+return TokenType::FUNCTION;
 }
 
 inline TokenType _lexRule20(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::INT;
+return TokenType::BOOL;
 }
 
 inline TokenType _lexRule21(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::FLOAT;
+return TokenType::INT;
 }
 
 inline TokenType _lexRule22(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::STRING;
+return TokenType::FLOAT;
 }
 
 inline TokenType _lexRule23(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IDENTIFIER;
+return TokenType::STRING;
 }
 
 inline TokenType _lexRule24(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::SEMICOLON;
+return TokenType::IDENTIFIER;
 }
 
 inline TokenType _lexRule25(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::SEMICOLON;
+}
+
+inline TokenType _lexRule26(const Tokenizer& tokenizer, const std::string& yytext) {
 return TokenType::SEPARATOR;
 }
 // clang-format on
@@ -494,28 +498,29 @@ std::array<LexRule, Tokenizer::LEX_RULES_COUNT> Tokenizer::lexRules_ = {{
   {std::regex(R"(^,)"), &_lexRule3},
   {std::regex(R"(^\s+)"), &_lexRule4},
   {std::regex(R"(^\{[^\}]*\})"), &_lexRule5},
-  {std::regex(R"(^unit)"), &_lexRule6},
-  {std::regex(R"(^uses)"), &_lexRule7},
-  {std::regex(R"(^const)"), &_lexRule8},
-  {std::regex(R"(^var)"), &_lexRule9},
-  {std::regex(R"(^begin)"), &_lexRule10},
-  {std::regex(R"(^if)"), &_lexRule11},
-  {std::regex(R"(^then)"), &_lexRule12},
-  {std::regex(R"(^else)"), &_lexRule13},
-  {std::regex(R"(^case)"), &_lexRule14},
-  {std::regex(R"(^is)"), &_lexRule15},
-  {std::regex(R"(^end)"), &_lexRule16},
-  {std::regex(R"(^constructor)"), &_lexRule17},
-  {std::regex(R"(^function)"), &_lexRule18},
-  {std::regex(R"(^true|false)"), &_lexRule19},
-  {std::regex(R"(^[0-9])"), &_lexRule20},
-  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule21},
-  {std::regex(R"(^['"](.*?[^\\])?(\\\\)*['"])"), &_lexRule22},
-  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule23},
-  {std::regex(R"(^;)"), &_lexRule24},
-  {std::regex(R"(^\\)"), &_lexRule25}
+  {std::regex(R"(^\/\/.*\n)"), &_lexRule6},
+  {std::regex(R"(^unit)"), &_lexRule7},
+  {std::regex(R"(^uses)"), &_lexRule8},
+  {std::regex(R"(^const)"), &_lexRule9},
+  {std::regex(R"(^var)"), &_lexRule10},
+  {std::regex(R"(^begin)"), &_lexRule11},
+  {std::regex(R"(^if)"), &_lexRule12},
+  {std::regex(R"(^then)"), &_lexRule13},
+  {std::regex(R"(^else)"), &_lexRule14},
+  {std::regex(R"(^case)"), &_lexRule15},
+  {std::regex(R"(^is)"), &_lexRule16},
+  {std::regex(R"(^end)"), &_lexRule17},
+  {std::regex(R"(^constructor)"), &_lexRule18},
+  {std::regex(R"(^function)"), &_lexRule19},
+  {std::regex(R"(^true|false)"), &_lexRule20},
+  {std::regex(R"(^[0-9])"), &_lexRule21},
+  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule22},
+  {std::regex(R"(^['"](.*?[^\\])?(\\\\)*['"])"), &_lexRule23},
+  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule24},
+  {std::regex(R"(^;)"), &_lexRule25},
+  {std::regex(R"(^\\)"), &_lexRule26}
 }};
-std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}}};
+std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}}};
 // clang-format on
 
 #endif
