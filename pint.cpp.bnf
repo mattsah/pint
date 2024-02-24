@@ -8,43 +8,19 @@
 %%
 
 code
-	: {
-		$$ = std::make_shared<Expr>();
+	: expr SEMICOLON {
+		$$ = std::make_shared<ListExpr>($1);
 	}
-	| unit_expr header_expr {
-		$$ = std::make_shared<Expr>();
-	}
-;
-
-unit_expr
-	: UNIT IDENTIFIER SEMICOLON {
-		$$ = std::make_shared<UnitExpr>($2);
+	| code expr SEMICOLON {
+		as(ListExpr, $1)->list.push_back($2);
+		$$ = $1;
 	}
 ;
 
-header_expr
-	: {
-		$$ = std::make_shared<Expr>();
-	}
-	| comment header_expr {
-		$$ = std::make_shared<Expr>();
-	}
-	| uses_expr header_expr {
-		$$ = std::make_shared<Expr>();
-	}
-;
-
-comment
-	: COMMENT {
-		$$ = std::make_shared<Expr>();
-		printf("Comment Found\n");
-	}
-;
-
-uses_expr
-	: USES ilist SEMICOLON {
-		$$ = std::make_shared<UsesExpr>($2);
-		printf("Uses Found\n");
+expr
+	: unit_expr
+	| uses_expr {
+		$$ = $1;
 	}
 ;
 
@@ -54,27 +30,64 @@ identifier_expr
 	}
 ;
 
-identifier_list_expr
+identifier_path_expr
 	: identifier_expr {
-		$$ = std::make_shared<IdentifierListExpr>($1);
+		$$ = std::make_shared<ListExpr>($1); // TODO: customize
 	}
-	| identifier_list_expr ',' identifier_expr {
-		$1->list.push_back($3);
+	| identifier_path_expr '.' identifier_expr {
+		as(ListExpr, $1)->list.push_back($3);
 		$$ = $1;
 	}
 ;
 
-number
-	: INT {
-		$$ = std::make_shared<Expr>();
+identifier_path_as_expr
+	: unit_expr_path {
+		$$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1));
 	}
-	| FLOAT {
-		$$ = std::make_shared<Expr>();
+	| unit_expr_path '.' identifier_expr {
+		$$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1), as(IdentifierExpr, $3));
+	}
+	| identifier_path_as_expr 'as' identifier_expr {
+		as(IdentifierPathAsExpr, $1)->setAlias(as(IdentifierExpr, $3));
+		$$ = $1;
 	}
 ;
 
-garbage
-	: STRING BOOL BEGIN CONST VAR IF THEN ELSE CASE IS END {
+unit_expr
+	: UNIT unit_expr_path {
+		$$ = std::make_shared<UnitExpr>(as(ListExpr, $2));
+	}
+;
+
+unit_expr_path
+	: identifier_expr {
+		$$ = std::make_shared<ListExpr>($1);
+	}
+	| unit_expr_path SEPARATOR identifier_expr {
+		as(ListExpr, $1)->list.push_back($3);
+		$$ = $1;
+	}
+;
+
+uses_expr
+	: USES uses_expr_list {
+		$$ = std::make_shared<UsesExpr>(as(ListExpr, $2));
+	}
+;
+
+uses_expr_list
+	: identifier_path_as_expr {
+		$$ = std::make_shared<ListExpr>($1);
+	}
+	| uses_expr_list ',' identifier_path_as_expr {
+		as(ListExpr, $1)->list.push_back($3);
+		$$ = $1;
+	}
+;
+
+
+everything
+	: UNIT USES CONST VAR BEGIN IF THEN ELSE CASE IS END CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON {
 		$$ = std::make_shared<Expr>();
 	}
 ;

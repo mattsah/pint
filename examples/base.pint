@@ -1,4 +1,4 @@
-unit main;
+unit main/test;
 
 uses io;
 

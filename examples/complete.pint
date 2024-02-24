@@ -109,7 +109,7 @@ begin
 		{
 
 		}
-		constructor(name: string(255); age: integer(1); email: string)
+		const constructor(name: string(255); age: integer(1); email: string)
 		begin
 			this.name  = name;
 			this.age   = age;

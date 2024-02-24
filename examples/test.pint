@@ -1,0 +1,22 @@
+{
+	test
+}
+unit app;
+
+uses io;
+
+{
+
+}
+const main: function(): integer
+begin
+	var x: integer;  // Declare x as an integer
+	var y: real;     // Declare y as a real
+	var z: real;     // Declare z as a real
+
+	x = 2;
+	y = 2.5;
+	z = sum(x, y);
+
+	return 0; // return and exit the function
+end;
