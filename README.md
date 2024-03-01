@@ -1,243 +1,376 @@
 # Pascal Inspired New-Talk (PINT)
 
-PINT (like beer) is a **hypothetical** object-oriented programming language _without_ class inheritance.  Its syntax is heavily inspired by Pascal, so much so that you can obtain syntax highlighting generally by just enabling any `.pint` file to use a Pascal language file.  Unlike Pascal, PINT has a number of more modern features which aim to reduce repetition and enhance availability of run-time information out of the box.
+PINT (like beer) is a **hypothetical** object-oriented programming language.  Its syntax is heavily inspired by Pascal, so much so that you can obtain syntax highlighting generally by just enabling any `.pint` file to use a Pascal language file.  Unlike Pascal, PINT has a number of more modern features which aim to reduce repetition and enhance availability of run-time information out of the box.
 
 PINT is neither compiled, nor interpreted, because it's not real **yet**.  However, the ultimate aim is to have a compiled language with flexibility in choice of dynamic (less efficient) or type-safe (more efficient) features and data structures.
 
-## Everything Is An Object
+## Basic Usage
 
-Integers?  Yep, that's an object.  Functions? Objects.  Interfaces?  Yes, stop asking.  Technically, they're all structs, but a struct is just an object without function pointers.  To further elucidate this point, let's look at a basic variable declaration.
+### Declaring Variables
 
-```pascal
-var x: integer(8);
+Variables can be declared separately or declared during assignment.  The universal declaration format is the following.
+
+```erlang
+var <name>:[<type>][([<size>])][[[<length>]]];
 ```
 
-While this looks like a simple memory allocation (get me 8-bits and reference the pointer as x), the above code is actually creating an object behind the scenes.  These objects may differ slightly in their properties depending on the core "type" being created, but for an integer and most scalar types you can imagine it as follows:
+When a variable is declared, the signature of the declaration says a lot about the variable.  There are three main concepts to cover here:
 
-```json
-{
-    type: "integer",  // The the type of the object
-    size: 8,          // The representative size of the object (type specific)
-    pntr: null,       // Where data for this object is stored in memory
-    impl: <bm>        // An 8-bit bitmask flagging type-safety, size-safety, etc.
-}
-```
+#### Type vs. Size vs. Length
 
-Basically, with the exception of labels, anywhere you see a `:` whatever follows is an object type declaration.  Additional examples include, defining interfaces, classes, and functions:
+Values have both a type and a size.  This is contrast to other languages where the size is often part of type.  What the size refers to depends on the type, for numbers it refers to its bit-length, for characters and strings it refers to the UTF code unit size.  Sizes should not be thought of as the amount of memory consumed.  Valid sizes are always multiple of 8.
 
-```pascal
-const main: function(argc: integer, argv: string[]): integer
-begin
-	return 0;
-break;
-```
+Length only applies to arrays.  The length is the logical length of the thing.  For an array of characters (aka: a string), this would be the length of the string.
 
-In the above example, we're creating four objects.  See if you can spot them all!
+#### Explicit vs. Implicit
 
-## Variables, Types and Sizes
+Both the type and size of a variable can be explicitly or implicitly declared.  If these are explicitly declared, then you would not be able to initialize the value with an incompatible type/size.  If these are implicitly declared, then the type/size are determined upon initialization, but are immutable.
 
-PINT tries to reach a middle ground between dynamic and statically typed languages in that compatible values can be dynamically typed or resized depending on how they were declared.  To declare a variable you use the `var` keyword.
+#### Fixed vs. Dynamic
 
-Declaration and assignment can occur in a single line:
+Both the type and size of a variable can also be fixed or dynamic.  If a type of a variable is fixed, whether the type was determined explicitly (at declaration) or implicitly (at initialization) it cannot be changed.  A dynamic type, by contrast, means that the type of the variable can change.  The same logic applies to size.
+
+#### Examples
+
+Explicit fixed type and explicit fixed size:
 
 ```pascal
-var x: integer(32) = 5;
+var x:integer(8);
 ```
 
-Or in multiple separately:
+Explicit fixed type and implicit fixed size and 
 
 ```pascal
-var x: integer(32);
+var x:integer();
+```
+
+Explicit fixed type and implicit dynamic size:
+
+```pascal
+var x:integer;
+```
+
+Implicit fixed type and explicit fixed size:
+
+```pascal
+var x:(8);
+```
+
+Implicit fixed type and implicit fixed size:
+
+```pascal
+var x:();
+```
+
+Implicit fixed type and implicit dynamic size:
+
+```pascal
+var x:;
+```
+
+Implicit dynamic type and implicit dynamic size:
+
+```pascal
+var x;
+```
+
+Any of the above declaration styles can turned into an array by appending `[]`:
+
+```pascal
+var x:integer(8)[];
+```
+
+You can fix the length of an array by adding a number inside the brackets:
+
+```pascal
+var x:integer(8)[5];
+```
+
+Strings are just dynamic length arrays of characters.  The following two declaration are equivalent:
+
+```pascal
+var x:char(8)[];
+var y:string(8);
+```
+
+Accordingly, if you want a fixed length string (as opposed to an array of strings), you need to use something like the following:
+
+```pascal
+var x:char(8)[5]
+```
+
+The following would created a fixed length array of strings (themselves of dynamic length):
+
+````pascal
+var x:string(8)[5];
+````
+
+Similarly a boolean value declared as follows would result in an array of booleans with a size of one and an array length equivalent to the specified size:
+
+```pascal
+var x:boolean(8);
+```
+
+### Types and Default Sizes
+
+Whenever a variable is declared without explicit size, or when a constant of a certain type is used in the code, the default sizes are as follows:
+
+| Keyword    | Default Size | Description                                                  |
+| ---------- | ------------ | ------------------------------------------------------------ |
+| `integer`  | 32           | Signed integer value.  Default for any `var x:integer` or constant (in code), e.g. `5`. |
+| `cardinal` | 32           | Unsigned integer value.  Default for any `var x:cardinal`.  There is no way to specify a constant (in code) as a cardinal. |
+| `real`     | 32           | Signed float values.  Default for any `var x:real` or constant (in code), e.g. `5.5`. |
+| `char`     | 8            | Character value, size indicates multi-byte unit size. Characters are UTF-8.  Default for any `var x:char` or constant single character string (in code), e.g. `'c'`. |
+| `string`   | 8            | String value, size indicates multi-byte unit size. Strings are UTF-8.  Default for any `var x:string` or constant multi-character string (in code), e.g. `'string`'. |
+| `boolean`  | 1            | Boolean value, size > 1 indicates a bitmask, equivalent to `var x:boolean(1)[<size>]` |
+
+### Assignment
+
+You can declare variables separately (as we have seen) or declare them during assignment.  Use `var` only when declaring.  For example, a combined declaration and assignment would look like:
+
+```pascal
+var x:integer(8) = 5;
+```
+
+Assigned separately would look like:
+
+```pascal
+var x:integer(8);
 
 x = 5;
 ```
 
-Although the default `integer` size is 32-bits, _how_ a variable is declared carries additional meaning.  In the following example, when the assignment takes place, the const of `5` (a 32-bit integer) is checked to see if it will fit into the smaller `x` (a 16-bit integer) due to its size being larger.  Since it is "in bounds," the assignment can proceed, despite that `x` is declared explicitly as a 16-bit integer:
+### Conditions
+
+Block style conditionals:
 
 ```pascal
-var x: integer(16) = 5;  // sizeOf(x) == 16
+if x < 5 begin
+	io.writeln('x is less than 5');
+end
+else if x == 5 begin
+	io.writeLn('x is equal to 5')
+end
+else begin
+	io.writeLn('x is greater than 5');
+end
 ```
 
-By contrast, the example below would result in an error because the integer `1024` does not fit within the explicitly declared `size` of 8-bits.
+Because the previous example only has a single statement it can be simplified:
 
 ```pascal
-var x: integer(8) = 1024;  // Error
+if x < 5 then
+	io.writeLn('x is less than 5');
+else if x == 5 then
+	io.writeLn('x is equal to 5');
+else then
+	io.writeLn('x is greater than 5');
 ```
 
-> Error: cannot assign integer(32) to integer(8), out of bounds.
-
-Declaring variables in this manner results in them being both type-safe and size-safe, which are two distinct concepts in PINT.
-
-It also possible, however, for a variable to be declared with a dynamic size.  In the example below we declare `x` as an integer, but we do not specify a size during the declaration by leaving off the `(#)` notation.
+#### And
 
 ```pascal
-var x: integer;
+if x < 5 and x <> 3 then
+	io.writLn('x is less than 5, but not 3');
 ```
 
-Although this `integer` will still default to 32 bits, this means that its size will be automatically adjusted to match an assigned value.  This can be demonstrated by explicitly casting the `integer` we assign to it as something smaller and then checking it:
+#### Or
 
 ```pascal
-var x: integer = 128:integer(8);  // sizeOf(x) == 8
+if x < 5 or x > 5 then
+	io.writeLn('x is not 5');
 ```
 
-Similarly it can be reallocated to accommodate larger sizes after the fact.  The following re-assignment would produce no error, and `x` would be resized as needed:
+#### Ternary
 
 ```pascal
-x = 1024;  // sizeOf(x) == 32
+var msg:string = case x < 5
+	then 'x is less than 5'
+	else 'x is greater than or equal to 5';
+
+io.writLn(msg);
 ```
 
-### Implicit Declarations Through Assignment
-
-It is possible to implicitly declare the type of a variable through assignment by leaving off the type.  Variables declared in this way will retain their type-safety, but will not have size-safety:
+#### Not
 
 ```pascal
-var x: = 5;
+if not x < 5 then
+	io.writeln('x is greater than or equal to 5')
 ```
 
-To retain type safety with an implicit declaration you would simply do:
+### Loops
+
+A basic for loop:
 
 ```pascal
-var x:() = 5;
+for var x = 1 to 5 begin
+	io.writeLn('x is equal to ', x);
+end
 ```
 
-Similarly, you can declare an explicit size and get an implicit type:
+Simplified to a single line:
 
 ```pascal
-var x:(8) = 5;
+for var x = 1 to 5 do
+	io.writeLn('x is equal to ', x);
 ```
 
-Lastly, it is possible to declare a variable in such a way that is has neither type-safety, nor size-safety:
+Iterating over characters in a string:
 
 ```pascal
-var x = 5;
+for var x in 'string' do
+	io.writeLn('x is equal to ', x);
 ```
 
-In this case the the variable `x` could be assigned rather arbitrarily:
+Iterating over values in an array:
 
 ```pascal
-x = 1024;   // typeOf(x) == 'integer'
-x = 10.2;   // typeOf(x) == 'real'
-x = 'str';  // typeOf(x) == 'string'
-x = 'c';    // typeOf(x) == 'char'
+for var x in [1, 2, 3, 4, 5] do
+	io.writeLn('x is equal to ', x);
 ```
 
-### Chars and Strings
-
-Characters and strings in PINT are in Unicode Transformation Format (UTF).  By default, they are UTF-8.
+A basic while loop:
 
 ```pascal
-var c = 'c';  // sizeOf(c) == 8, typeOf(c) == 'char'
+var x = 1;
+
+while x < 5 begin
+	io.writeLn('x is equal to ', x);
+	x++;
+end
 ```
 
-Similar to integers, cardinals (unsigned integers), and real numbers (floats), you can define their size when you declare them:
+A single line while loop;
 
 ```pascal
-var c: char(16) = 'c';  // sizeOf(c) == 16
+var x = 'string';
+
+while x.length do
+	io.writeLn(x.pop(2)); // outputs: 'ng', 'ri', 'st'
+end;
 ```
 
-> IMPORTANT: Up until this point we have only dealt with scalar values which, by and large, fit into the declared sizes.  The `size` property of value should not be understood to be the actual amount of memory consumed in its storage, nor is it strictly speaking a count of the elements contained therein.  Rather it is a representational size in terms which are different but meaningful for each type.
->
-> - For scalars like numbers, booleans, and bitmasks, their objects represent bits.  Accordingly the size is the number of bits they represent.
-> - For characters and strings, their objects represent UTF characters.  Accordingly their size is a UTF unit bit-size.
-> - For complex types like arrays, objects, interfaces... their size will generally represent the number of elements, properties, functions, etc.
->
-> The `sizeOf` function always reports this representational size.  To determine the size of the allocated memory you would use `bytesOf()`.  To determine the length of value in terms of what it represents you would use `lengthOf()`.
-
-Strings operate on the same principle, but unlike some other languages the type of quotes don't suggest anything about the type.  Consider these implicit declarations:
+A repeat loop:
 
 ```pascal
-var c: = 'c'    // typeOf(c) == 'char'
-var s: = 'str'  // typeOf(s) == 'string'
+var x = 1;
+
+repeat
+	io.writeLn('x is equal to ', x);
+	x++;
+until
+	x == 5;
 ```
 
-Assigning a character to an explicitly typed `string` is always fine:
+### Units
+
+All code must belong to a unit, you declare the unit for the code as follows:
 
 ```pascal
-var s: string(8) = 'c';
+unit app;
 ```
 
-Assigning a string to an explicitly type `char` is fine if its only a single character:
+You can have a unit inside a unit:
 
 ```pascal
-var c: char = 's':string;
+unit app\utils;
 ```
 
-But, similar to trying to assign an `integer(32)` to an `integer(16)` the value will first be checked to determine if it's in bounds:
+You can import other units:
 
 ```pascal
-var c: char = 'string';
+uses io;
 ```
 
-> Error: cannot assign string(8) to char(8), out of bounds.
-
-Finally, strings act like arrays in that you can obtain each character within the string via and index:
+You can import only specific register types from a unit:
 
 ```pascal
-var c: char = 'string'[0];  // c == 's'
+uses io.writeLn;
 ```
 
-### Arrays
-
-Arrays basically look as you would anticipate based on most other languages and are declare similar to other variables.  You can have arrays of any type of values and those values can be type-safe and size-safe depending on how you've declared them.  As you might expect, you can also declare the `size` of an array itself:
+You can alias:
 
 ```pascal
-var numbers: integer(8)[10];
+uses io.writeLn as printLn;
 ```
 
-Attempting to add onto an array (which is already full) would result in an error:
+You can combine all the things:
 
 ```pascal
-numbers[] = 10;
+uses
+	io,
+	app.die,
+	app\utils.rot13 as encrypt,
+;
 ```
 
-> Error: cannot assign integer(32) to integer(8)[], too many elements.
-
-Similarly, you'd receive an error trying to assign an incompatible value even if the array still had room:
+Once you're in a unit you can register identifiers at the unit level.  Identifiers can be any valid type, however, they are all constants.  The shortest possible program in PINT looks like this:
 
 ```pascal
-numbers[] = 1024;
+unit main;
+
+register main:function() = 0;
 ```
 
-> Error: cannot assign integer(32) to integer(8)[], out of bounds.
+### Functions
 
-Let's look at a few more example declarations starting with an array whose values are type and size-safe, but whose own `size` is dynamic:
+Functions generally look more like this:
 
 ```pascal
-var numbers: integer(8)[];
+register main:function(argc:integer; argv:string[]): integer(8)
+begin
+	return 0;
+end
 ```
 
-We can remove the size-safety of its values:
+The use of `return` above is actually a short hand for assigning the return value and immediately returning from the function.  We can also assign the `return` value directly and only return at the end of the function, allowing us to perform actions after our return value has been determined.
 
 ```pascal
-var numbers: integer[];
+register main:function(argc:integer; argv:string[]): integer(8)
+begin
+	if var config = getConfig('/var/app/config.jin') is Error then
+		return = 1;
+	else then
+		return = 0;
+
+	cleanup();
+end
 ```
 
-We can remove the type-safety altogether:
+Alternative return types allow you to return arbitrary values from a function which do not match any of its known return types.  You do this by placing a `?` symbol before the known return type:
 
 ```pascal
-var things[];
+register getConfig:function(path:string): ?Config
+begin
+	var fd or error = io.openFile(path);
+	
+	if error then
+		return new Error('Could not open configuration at "%s"'.format(path), error);
+	else begin
+		var config:Config = new Config();
+
+		// parse and set configuration information
+		
+		return config;
+	end
+end
 ```
 
-There are array literals, so you can assign an array to an array:
+### Errors
+
+To capture the error you can use the alternative return types and the `?` symbol:
 
 ```pascal
-var things[] = [1, 2.5, 'c', 'string'];
+var config:Config;
+
+config? err = getConfig('/var/app/config.jin');
+
+if err is Error begin
+    repeat
+        io.writeLn('Error: %s in function %s'.format(err.getMessage(), err.getFunction()));
+        err = err.getPrevious();
+    until not err;
+end
 ```
 
-And there are operations:
-
-```pascal
-things = things + [1, 5, 'b'];  // Adds elements from right side not matched in left side
-things = things - ['c', 7.5];   // Removes elements from left side matched in right side
-things = things ~ ['cats', 2];  // Concatenate elements from right side to end of left side
-```
-
-
-
-```pascal
-var thing: 
-
-thing.name = 'string';
-thing.age  = 18;
-```
-
+### 
