@@ -56,7 +56,7 @@ end;
 {
 	Implementations (triats) can implement interfaces, can include records
 }
-register doEmail: implementation(hasEmail, canEmail)
+register doEmail: implementation(hasEmail; canEmail)
 begin
 	private:
 		const transport: Transport;

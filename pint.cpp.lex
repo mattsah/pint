@@ -16,6 +16,7 @@ else						ELSE
 case						CASE
 is							IS
 end							END
+register					REGISTER
 constructor					CONSTRUCTOR
 function					FUNCTION
 true|false					BOOL

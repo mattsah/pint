@@ -5,7 +5,7 @@ uses io;
 {
 	The main function is the entry point.
 }
-const main: function(): integer
+register main: function(argc: integer, argv: string[]): integer
 begin
 	var x: integer;  // Declare x as an integer
 	var y: real;     // Declare y as a real
@@ -21,7 +21,7 @@ end;
 {
 	Here we have a function that takes two numbers
 }
-const sum: function(x: number, y: number): number
+register sum: function(x: number, y: number): number
 begin
 	if x >= y then
 		return = x + y; // set return value, but do not exit
