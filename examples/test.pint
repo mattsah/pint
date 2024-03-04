@@ -21,3 +21,8 @@ uses
 	{ Individual identifier as alias }
 	app\models.PersonRepository as People
 ;
+
+register main: function(argc: integer; argv: string[]): integer
+begin
+	return 0; // return and exit the function
+end;

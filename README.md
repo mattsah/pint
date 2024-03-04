@@ -35,19 +35,19 @@ Both the type and size of a variable can also be fixed or dynamic.  If a type of
 Explicit fixed type and explicit fixed size:
 
 ```pascal
-var x:integer(8);
+var x: integer(8);
 ```
 
 Explicit fixed type and implicit fixed size and 
 
 ```pascal
-var x:integer();
+var x: integer();
 ```
 
 Explicit fixed type and implicit dynamic size:
 
 ```pascal
-var x:integer;
+var x: integer;
 ```
 
 Implicit fixed type and explicit fixed size:
@@ -77,38 +77,38 @@ var x;
 Any of the above declaration styles can turned into an array by appending `[]`:
 
 ```pascal
-var x:integer(8)[];
+var x: integer(8)[];
 ```
 
 You can fix the length of an array by adding a number inside the brackets:
 
 ```pascal
-var x:integer(8)[5];
+var x: integer(8)[5];
 ```
 
 Strings are just dynamic length arrays of characters.  The following two declaration are equivalent:
 
 ```pascal
-var x:char(8)[];
-var y:string(8);
+var x: char(8)[];
+var y: string(8);
 ```
 
 Accordingly, if you want a fixed length string (as opposed to an array of strings), you need to use something like the following:
 
 ```pascal
-var x:char(8)[5]
+var x: char(8)[5]
 ```
 
 The following would created a fixed length array of strings (themselves of dynamic length):
 
 ````pascal
-var x:string(8)[5];
+var x: string(8)[5];
 ````
 
 Similarly a boolean value declared as follows would result in an array of booleans with a size of one and an array length equivalent to the specified size:
 
 ```pascal
-var x:boolean(8);
+var x: boolean(8);
 ```
 
 ### Types and Default Sizes
@@ -129,13 +129,13 @@ Whenever a variable is declared without explicit size, or when a constant of a c
 You can declare variables separately (as we have seen) or declare them during assignment.  Use `var` only when declaring.  For example, a combined declaration and assignment would look like:
 
 ```pascal
-var x:integer(8) = 5;
+var x: integer(8) = 5;
 ```
 
 Assigned separately would look like:
 
 ```pascal
-var x:integer(8);
+var x: integer(8);
 
 x = 5;
 ```
@@ -184,7 +184,7 @@ if x < 5 or x > 5 then
 #### Ternary
 
 ```pascal
-var msg:string = case x < 5
+var msg: string = case x < 5
 	then 'x is less than 5'
 	else 'x is greater than or equal to 5';
 
@@ -247,7 +247,6 @@ var x = 'string';
 
 while x.length do
 	io.writeLn(x.pop(2)); // outputs: 'ng', 'ri', 'st'
-end;
 ```
 
 A repeat loop:
@@ -309,7 +308,7 @@ Once you're in a unit you can register identifiers at the unit level.  Identifie
 ```pascal
 unit main;
 
-register main:function() = 0;
+register main: function() = 0;
 ```
 
 ### Functions
@@ -317,7 +316,7 @@ register main:function() = 0;
 Functions generally look more like this:
 
 ```pascal
-register main:function(argc:integer; argv:string[]): integer(8)
+register main: function(argc: integer; argv: string[]): integer(8)
 begin
 	return 0;
 end
@@ -326,7 +325,7 @@ end
 The use of `return` above is actually a short hand for assigning the return value and immediately returning from the function.  We can also assign the `return` value directly and only return at the end of the function, allowing us to perform actions after our return value has been determined.
 
 ```pascal
-register main:function(argc:integer; argv:string[]): integer(8)
+register main: function(argc: integer; argv: string[]): integer(8)
 begin
 	if var config = getConfig('/var/app/config.jin') is Error then
 		return = 1;
@@ -340,12 +339,12 @@ end
 Alternative return types allow you to return arbitrary values from a function which do not match any of its known return types.  You do this by placing a `?` symbol before the known return type:
 
 ```pascal
-register getConfig:function(path:string): ?Config
+register getConfig: function(path: string): ?Config
 begin
-	var fd or error = io.openFile(path);
+	var fd = io.openFile(path);
 	
-	if error then
-		return new Error('Could not open configuration at "%s"'.format(path), error);
+	if not fd then
+		return new Error('Could not open configuration at "%s"'.format(path));
 	else begin
 		var config:Config = new Config();
 
@@ -356,21 +355,107 @@ begin
 end
 ```
 
-### Errors
-
-To capture the error you can use the alternative return types and the `?` symbol:
+To capture the returned value and assert its type, use the `on` statement.  In the example below, in the event that `err` is an `Error` we iterate and print the errors so long as there are previous errors to report.
 
 ```pascal
-var config:Config;
+var config: Config;
 
 config? err = getConfig('/var/app/config.jin');
 
-if err is Error begin
-    repeat
-        io.writeLn('Error: %s in function %s'.format(err.getMessage(), err.getFunction()));
-        err = err.getPrevious();
-    until not err;
-end
+on err is Error repeat
+    io.writeLn('Error: %s in function %s'.format(err.getMessage(), err.getFunction()));
+    err = err.getPrevious();
+until
+	not err;
 ```
 
-### 
+## Object Oriented Constructs
+
+In this next section, we'll examine the object-oriented constructs of PINT.  To elucidate this, we'll imagine things in the context of trying to build a logging library.
+
+### Labels
+
+Labels are PINT's form of enumerators.
+
+```pascal
+unit Logger;
+
+register Level: label = (INFO, WARNING, ERROR);
+```
+
+If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend enumerators:
+
+```pascal
+unit CodeLogger;
+
+uses Logger;
+
+register Level: label(Logger\Level) = (CRITICAL);
+```
+
+Enumerators are accessed using a backslash notation:
+
+```
+Level\INFO
+```
+
+### Objects
+
+Simple objects are basically dictionaries with variant properties.
+
+```pascal
+var context := new object()
+
+context.x = x;
+context.y = y;
+```
+
+### Records
+
+Records are like objects except they have pre-defined properties and types.
+
+```pascal
+unit Logger;
+
+register Entry: record = (
+	text: string,
+	level: LogLevel,
+	timestamp: cardinal default time()
+);
+```
+
+Like labels, records can extend other records:
+
+```pascal
+unit CodeLogger;
+
+uses Logger;
+
+register Entry: record(Logger\Entry) = (
+	line: cardinal,
+	context: object
+);
+```
+
+To use a record, you need to use the `new` keyword to create an instance:
+
+```pascal
+var entry := new LogEntry(
+	text: 'Cannot convert integer(32) to integer(8), value too large.',
+	level: LogLevel\WARNING,
+	context: new object(
+		left: x
+		right: 
+	)
+);
+```
+
+Any property which does not have a default initialization is required to be set upon instantiation.
+
+### Interfaces
+
+Interfaces are an easy way that you can define methods which may be common across multiple implementations.  Continuing with our logger example, we might define a simple logger interface as follows:
+
+```pascal
+register Logger: interface() = const log: function(entry: Entry): ?Logger;
+```

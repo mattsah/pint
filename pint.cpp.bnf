@@ -85,6 +85,14 @@ uses_expr_list
 	}
 ;
 
+register_expr
+	: REGISTER signature BEGIN code END {
+
+	},
+	| REGISTER signature '=' literal {
+
+	}
+;
 
 everything
 	: UNIT USES REGISTER CONST VAR BEGIN IF THEN ELSE CASE IS END CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON {
