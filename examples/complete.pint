@@ -50,7 +50,7 @@ register canEmail: interface()
 begin
 	const setEmailTransport: function(transport: Transport);
 	const email: function(subject, message: string);
-end;
+end
 
 
 {
@@ -68,7 +68,7 @@ begin
 		const setEmailTransport: function(var transport: Transport)
 		begin
 			this.transport = transport;
-		end;
+		end
 
 		{
 
@@ -87,8 +87,8 @@ begin
 						email: this.email
 					))
 				;
-		end;
-end;
+		end
+end
 
 
 {
@@ -114,7 +114,7 @@ begin
 			this.name  = name;
 			this.age   = age;
 			this.email = email;
-		end;
+		end
 
 		{
 
@@ -126,7 +126,7 @@ begin
 			// 		this.friends.add(friend);
 			// 	end
 			// );
-		end;
+		end
 
 		{
 
@@ -139,11 +139,11 @@ begin
 			begin
 				if var err: Err = friend.email@doEmail(subject, message) then
 					errs[] = err;
-			end;
+			end
 
 			if errors.length() then
 				return new Err('Could not share to %d friends'.format(errors.length()), (
 					errs: errs
 				));
-		end;
-end;
+		end
+end
