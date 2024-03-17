@@ -15,7 +15,7 @@ uses
 {
 	Enumerators
 }
-register Days: label() = (
+register Days: label = (
 	MON,
 	TUE,
 	WED,
@@ -29,7 +29,7 @@ register Days: label() = (
 {
 	Records (like structs)
 }
-register Being: record() = (
+register isBeing: record = (
 	name: string,
 	age: cardinal
 );
@@ -38,7 +38,7 @@ register Being: record() = (
 {
 	Extending Records
 }
-register Emailable: record(Being) = (
+register hasEmail: record(isBeing) = (
 	email: string
 );
 
@@ -46,7 +46,7 @@ register Emailable: record(Being) = (
 {
 	Interfaces
 }
-register canEmail: interface()
+register canEmail: interface
 begin
 	const setEmailTransport: function(transport: Transport);
 	const email: function(subject, message: string);
@@ -103,11 +103,6 @@ begin
 	private:
 		var friends: Person[];
 
-	protected:
-    var name: string(255);
-    var age: cardinal(1);
-    var email: string;
-
 	public:
 		{
 
@@ -143,13 +138,11 @@ begin
         var result? error = friend.email@doEmail(subject, message);
 
         on error is Error then
-          errors[] = error
-        ;
+          errors[] = error;
 			end
 
-			if errors.length() then
-				return new Error('Could not share to %d friends'.format(errors.length()), errors)
-      ;
+			if errors.length then
+				return new Error('Could not share to %d friends'.format(errors.length()), errors);
 
       return true;
 		end
