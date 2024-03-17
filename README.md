@@ -327,7 +327,7 @@ The use of `return` above is actually a short hand for assigning the return valu
 ```pascal
 register main: function(argc: integer; argv: string[]): integer(8)
 begin
-	if var config = getConfig('/var/app/config.jin') is Error then
+	if not var config = getConfig('/var/app/config.jin') then
 		return = 1;
 	else then
 		return = 0;
@@ -414,7 +414,7 @@ register Level: label = (
 );
 ```
 
-If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend enumerators:
+If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend labels:
 
 ```pascal
 unit ContextLogger;
@@ -426,7 +426,7 @@ register Level: label(Logger\Level) = (
 );
 ```
 
-Enumerators are accessed using a backslash notation:
+Labels are accessed using a backslash notation:
 
 ```
 Level\INFO
