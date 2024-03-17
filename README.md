@@ -371,7 +371,34 @@ until
 
 ## Object Oriented Constructs
 
-In this next section, we'll examine the object-oriented constructs of PINT.  To elucidate this, we'll imagine things in the context of trying to build a logging library.
+In this next section, we'll examine the object-oriented constructs of PINT.  To elucidate this, we'll imagine things in the context of trying to build a logging library.  Let's start with basic objects.
+
+### Objects
+
+Basic objects are not classed.  They are basically dictionaries with variant properties.
+
+```pascal
+var context   := new object()
+context.left  := x;
+context.right := y;
+```
+
+You can also use a literal syntax:
+
+```pascal
+var context := (
+	left  := x,
+	right := y
+);
+```
+
+To access an object property you can use the `.` notation when the identifier is static.  If the identifier needs to be a variable you can use `[]` notation:
+
+```pascal
+var key := 'left';
+
+return context[key];
+```
 
 ### Labels
 
@@ -380,17 +407,23 @@ Labels are PINT's form of enumerators.
 ```pascal
 unit Logger;
 
-register Level: label = (INFO, WARNING, ERROR);
+register Level: label = (
+	INFO,
+	WARNING,
+	ERROR
+);
 ```
 
 If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend enumerators:
 
 ```pascal
-unit CodeLogger;
+unit ContextLogger;
 
 uses Logger;
 
-register Level: label(Logger\Level) = (CRITICAL);
+register Level: label(Logger\Level) = (
+	CONTEXT
+);
 ```
 
 Enumerators are accessed using a backslash notation:
@@ -399,20 +432,31 @@ Enumerators are accessed using a backslash notation:
 Level\INFO
 ```
 
-### Objects
+### Types
 
-Simple objects are basically dictionaries with variant properties.
+You can define custom types:
 
 ```pascal
-var context := new object()
+unit ContextLogger;
 
-context.x = x;
-context.y = y;
+register Context: type = (
+	object,
+	cardinal
+);
+```
+
+Then use them:
+
+```pascal
+unit ContextLogger.Context;
+
+var context1: Context = 1;
+var context2: Context = (id := id);
 ```
 
 ### Records
 
-Records are like objects except they have pre-defined properties and types.
+Records are basically structs.  They have a number of properties with predefined types, but can also define default values.
 
 ```pascal
 unit Logger;
@@ -427,25 +471,25 @@ register Entry: record = (
 Like labels, records can extend other records:
 
 ```pascal
-unit CodeLogger;
+unit ContextLogger;
 
 uses Logger;
 
 register Entry: record(Logger\Entry) = (
-	line: cardinal,
-	context: object
+	context: Context
 );
 ```
 
 To use a record, you need to use the `new` keyword to create an instance:
 
 ```pascal
-var entry := new LogEntry(
-	text: 'Cannot convert integer(32) to integer(8), value too large.',
-	level: LogLevel\WARNING,
-	context: new object(
-		left: x
-		right: 
+uses ContextLogger.(Entry, Level);
+
+var entry := new Entry(
+	text    = 'Cannot find record of type %s'.format(User),
+	level   = Level\WARNING,
+	context = (
+		id := id
 	)
 );
 ```
@@ -454,11 +498,98 @@ Any property which does not have a default initialization is required to be set 
 
 ### Interfaces
 
-Interfaces are an easy way that you can define methods which may be common across multiple implementations.  Continuing with our logger example, we might define a simple logger interface as follows:
+Interfaces are an easy way that you can define methods which may be common across multiple implementations.  All defined interface methods are public.  Continuing with our logger example, we might define a simple logger interface as follows:
 
 ```pascal
-register Logger: interface() = const log: function(entry: Entry): ?Logger;
+unit Logger;
+
+register Log: interface
+begin
+	const log: function(entry: Entry): ?self;
+end
 ```
+
+Extending that as well:
+
+```pascal
+unit ContextLogger;
+
+uses Logger;
+
+register Log: interface(Logger\Log)
+begin
+	const log: function(entry: Entry): ?self;
+end
+```
+
+### Implementations
+
+Implementations are like traits, they represent horizontally sharable functionality, they can offer implementations of interfaces:
+
+```pascal
+unit Core;
+
+uses io, crono, json, ContextLogger.(Log, Entry);
+
+register FileLogger(Log): implementation
+begin
+	const log: function(entry: Entry): ?Log
+	begin
+		var today? error  := new crono.Date('today');
+		var handle? error := io.open(
+			'storage/logs/%s.log'.format(today.format('Y-m-d')),
+			io.Mode\APPEND
+		);
+		
+		on error is Error then
+			return = error;
+		else begin
+			io.writeLine('%s: %s %s'.format(
+				entry.level,
+				entry.txt,
+				json.encode(entry.context)
+			);
+
+			io.close(handle);
+			
+			return = this;
+		end
+		
+		
+	end
+end
+```
+
+### Classes
+
+Unlike other object-oriented types, classes cannot extend other classes.  They can, however, implement interfaces (like implementations can), or use implementations.  In the example below we use our previously defined `FileLogger` implementation, that implements `ContextLogger.Log` to extend it's functionality to our `Application`:
+
+```pascal
+unit Core;
+
+use crono, ContextLogger.(Entry, Level);
+
+register Application: class(FileLogger)
+begin
+	public:
+		const boot: function(): self
+		begin
+			var start = crono.time();
+			
+			// Do booting stuff
+			
+			this.log(new Entry(
+				text    = 'Finished booting',
+				level   = Level\CONTEXT,
+				context = (
+					time := crono.time() - start
+				)
+			));
+		end
+end
+```
+
+
 
 ### Generics
 
@@ -516,7 +647,7 @@ begin
 	
 		const getRepository: function(class<T of Repository>: class): T
 		begin
-        	if not this.repositories[class] begin
+        	if not set this.repositories[class] begin
         		this.repositories[class] := new T(this);
         	end
         	
