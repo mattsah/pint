@@ -341,9 +341,7 @@ Alternative return types allow you to return arbitrary values from a function wh
 ```pascal
 register getConfig: function(path: string): ?Config
 begin
-	var fd = io.openFile(path);
-	
-	if not fd then
+	if not var fd = io.openFile(path) then
 		return new Error('Could not open configuration at "%s"'.format(path));
 	else begin
 		var config:Config = new Config();
@@ -355,18 +353,18 @@ begin
 end
 ```
 
-To capture the returned value and assert its type, use the `on` statement.  In the example below, in the event that `err` is an `Error` we iterate and print the errors so long as there are previous errors to report.
+To capture the returned value and assert its type, use the `on` statement.  In the example below, in the event that `error` is an `Error` we iterate and print the errors so long as there are previous errors to report.
 
 ```pascal
 var config: Config;
 
-config? err = getConfig('/var/app/config.jin');
+config? error = getConfig('/var/app/config.jin');
 
-on err is Error repeat
-    io.writeLn('Error: %s in function %s'.format(err.getMessage(), err.getFunction()));
-    err = err.getPrevious();
+on error is Error repeat
+    io.writeLn('Error: %s in function %s'.format(error.getMessage(), error.getFunction()));
+    error = error.getPrevious();
 until
-	not err;
+	not error;
 ```
 
 ## Object Oriented Constructs
