@@ -459,3 +459,97 @@ Interfaces are an easy way that you can define methods which may be common acros
 ```pascal
 register Logger: interface() = const log: function(entry: Entry): ?Logger;
 ```
+
+### Generics
+
+These are just some ideas for generics
+
+```pascal
+unit DI;
+
+register Injector: class()
+begin
+	public:
+		const get: function(class<T>: class): T
+		begin
+			return new T();
+		end
+end
+```
+
+```pascal
+unit DB;
+
+register EntityId: type(): (
+	integer,
+	string,
+	object
+);
+
+register Repository<T of Entity>: implementation()
+begin
+	protected:
+		const manager: Manager;
+
+	public:
+		const constructor(manager: Manager): void
+		begin
+			this.manager = manager;
+		end
+		
+		const find: function(id: EntityId): ?T
+		begin
+        	{find the entity and return it or return nil if not found}
+		end
+end
+
+register Manager: class()
+begin
+	private:
+		const repositories: object;
+
+	public:
+		const constructor()
+		begin
+			this.repositories = new object();
+		end
+	
+		const getRepository: function(class<T of Repository>: class): T
+		begin
+        	if not this.repositories[class] begin
+        		this.repositories[class] := new T(this);
+        	end
+        	
+			return this.repositories[class];
+		end
+end
+```
+
+```pascal
+unit App;
+
+register Person: class()
+begin
+	protected:
+		var id: integer;
+end
+
+register People: class(Repository<Person>)
+begin
+
+end
+```
+
+```pascal
+unit main;
+
+uses DI, DB, App;
+
+register main: function(): integer
+begin
+	var manager := DI.Injector.get(DB.Manager);
+	var people  := manager.getRepository(App.People);
+	var person  := people.find((email: 'info@dotink.org'));
+end
+```
+

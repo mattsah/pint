@@ -15,7 +15,7 @@ uses
 {
 	Enumerators
 }
-register Days: type() = (
+register Days: label() = (
 	MON,
 	TUE,
 	WED,
@@ -104,12 +104,15 @@ begin
 		var friends: Person[];
 
 	protected:
+    var name: string(255);
+    var age: cardinal(1);
+    var email: string;
 
 	public:
 		{
 
 		}
-		const constructor(name: string(255); age: integer(1); email: string)
+		const constructor(name: string(255); age: cardinal(1); email: string)
 		begin
 			this.name  = name;
 			this.age   = age;
@@ -131,19 +134,23 @@ begin
 		{
 
 		}
-		const share: function(subject, message: string): ?Err
+		const share: function(subject, message: string): ?bool
 		begin
-			var errs: Err[];
+			var errors: Error[];
 
 			for var friend: Person in this.friends then
 			begin
-				if var err: Err = friend.email@doEmail(subject, message) then
-					errs[] = err;
+        var result? error = friend.email@doEmail(subject, message);
+
+        on error is Error then
+          errors[] = error
+        ;
 			end
 
 			if errors.length() then
-				return new Err('Could not share to %d friends'.format(errors.length()), (
-					errs: errs
-				));
+				return new Error('Could not share to %d friends'.format(errors.length()), errors)
+      ;
+
+      return true;
 		end
 end
