@@ -589,8 +589,6 @@ begin
 end
 ```
 
-
-
 ### Generics
 
 These are just some ideas for generics
