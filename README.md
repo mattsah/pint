@@ -643,10 +643,10 @@ begin
 	
 		const getRepository: function(class: class<T of Repository>): T
 		begin
-        	if not set this.repositories[class] begin
-        		this.repositories[class] := new T(this);
-        	end
-        	
+			if not set this.repositories[class] begin
+				this.repositories[class] := new T(this);
+			end
+
 			return this.repositories[class];
 		end
 end
