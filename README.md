@@ -597,7 +597,7 @@ unit DI;
 register Injector: class()
 begin
 	public:
-		const get: function(class<T>: class): T
+		const get: function(class: class<T>): T
 		begin
 			return new T();
 		end
@@ -641,7 +641,7 @@ begin
 			this.repositories = new object();
 		end
 	
-		const getRepository: function(class<T of Repository>: class): T
+		const getRepository: function(class: class<T of Repository>): T
 		begin
         	if not set this.repositories[class] begin
         		this.repositories[class] := new T(this);
