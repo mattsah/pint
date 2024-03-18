@@ -533,14 +533,14 @@ register FileLogger(Log): implementation
 begin
 	const log: function(entry: Entry): ?Log
 	begin
-		var today? error  := new crono.Date('today');
-		var handle? error := io.open(
+		var today := new crono.Date('today');
+		var fd    := io.openFile(
 			'storage/logs/%s.log'.format(today.format('Y-m-d')),
 			io.Mode\APPEND
 		);
 		
-		on error is Error then
-			return = error;
+		if not fd then
+			return = new Error('Could not open log file');
 		else begin
 			io.writeLine('%s: %s %s'.format(
 				entry.level,
