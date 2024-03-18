@@ -135,15 +135,18 @@ begin
 
 			for var friend: Person in this.friends then
 			begin
-        var result? error = friend.email@doEmail(subject, message);
+				var result? error = friend.email@doEmail(subject, message);
 
-        on error is Error then
-          errors[] = error;
+				on error is Error then
+					errors[] = error;
 			end
 
 			if errors.length then
-				return new Error('Could not share to %d friends'.format(errors.length()), errors);
+				return new Error(
+					'Could not share to %d friends'.format(errors.length()),
+					errors
+				);
 
-      return true;
+			return true;
 		end
 end

@@ -19,7 +19,12 @@ uses
 	{ Individual identifier }
 	app\models.Person,
 	{ Individual identifier as alias }
-	app\models.PersonRepository as People
+	app\models.PersonRepository as People,
+	{ Multiple identifiers optionally alias }
+	app\models.(
+		Car,
+		CarRepository as Cars
+	)
 ;
 
 register main: function(argc: integer; argv: string[]): integer
