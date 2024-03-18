@@ -626,7 +626,7 @@ begin
 		
 		const find: function(id: EntityId): ?T
 		begin
-        	{find the entity and return it or return nil if not found}
+			{find the entity and return it or return nil if not found}
 		end
 end
 
