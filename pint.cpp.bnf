@@ -1,101 +1,92 @@
 %{
-	#include "tree.h"
+  #include "tree.h"
 
-	using namespace pint;
-	using Value = std::shared_ptr<Expr>;
+  using namespace pint;
+  using Value = std::shared_ptr<Expr>;
 %}
 
 %%
 
 code
-	: expr SEMICOLON {
-		$$ = std::make_shared<ListExpr>($1);
-	}
-	| code expr SEMICOLON {
-		as(ListExpr, $1)->list.push_back($2);
-		$$ = $1;
-	}
+  : expr SEMICOLON {
+    $$ = std::make_shared<ListExpr>($1);
+  }
+  | code expr SEMICOLON {
+    as(ListExpr, $1)->list.push_back($2);
+    $$ = $1;
+  }
 ;
 
 expr
-	: unit_expr
-	| uses_expr {
-		$$ = $1;
-	}
+  : unit_expr
+  | uses_expr {
+    $$ = $1;
+  }
 ;
 
 identifier_expr
-	: IDENTIFIER {
-		$$ = std::make_shared<IdentifierExpr>($1);
-	}
+  : IDENTIFIER {
+    $$ = std::make_shared<IdentifierExpr>($1);
+  }
 ;
 
 identifier_path_expr
-	: identifier_expr {
-		$$ = std::make_shared<ListExpr>($1); // TODO: customize
-	}
-	| identifier_path_expr '.' identifier_expr {
-		as(ListExpr, $1)->list.push_back($3);
-		$$ = $1;
-	}
+  : identifier_expr {
+    $$ = std::make_shared<ListExpr>($1); // TODO: customize
+  }
+  | identifier_path_expr '.' identifier_expr {
+    as(ListExpr, $1)->list.push_back($3);
+    $$ = $1;
+  }
 ;
 
 identifier_path_as_expr
-	: unit_expr_path {
-		$$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1));
-	}
-	| unit_expr_path '.' identifier_expr {
-		$$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1), as(IdentifierExpr, $3));
-	}
-	| identifier_path_as_expr 'as' identifier_expr {
-		as(IdentifierPathAsExpr, $1)->setAlias(as(IdentifierExpr, $3));
-		$$ = $1;
-	}
+  : unit_expr_path {
+    $$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1));
+  }
+  | unit_expr_path '.' identifier_expr {
+    $$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1), as(IdentifierExpr, $3));
+  }
+  | identifier_path_as_expr 'as' identifier_expr {
+    as(IdentifierPathAsExpr, $1)->setAlias(as(IdentifierExpr, $3));
+    $$ = $1;
+  }
 ;
 
 unit_expr
-	: UNIT unit_expr_path {
-		$$ = std::make_shared<UnitExpr>(as(ListExpr, $2));
-	}
+  : UNIT unit_expr_path {
+    $$ = std::make_shared<UnitExpr>(as(ListExpr, $2));
+  }
 ;
 
 unit_expr_path
-	: identifier_expr {
-		$$ = std::make_shared<ListExpr>($1);
-	}
-	| unit_expr_path SEPARATOR identifier_expr {
-		as(ListExpr, $1)->list.push_back($3);
-		$$ = $1;
-	}
+  : identifier_expr {
+    $$ = std::make_shared<ListExpr>($1);
+  }
+  | unit_expr_path SEPARATOR identifier_expr {
+    as(ListExpr, $1)->list.push_back($3);
+    $$ = $1;
+  }
 ;
 
 uses_expr
-	: USES uses_expr_list {
-		$$ = std::make_shared<UsesExpr>(as(ListExpr, $2));
-	}
+  : USES uses_expr_list {
+    $$ = std::make_shared<UsesExpr>(as(ListExpr, $2));
+  }
 ;
 
 uses_expr_list
-	: identifier_path_as_expr {
-		$$ = std::make_shared<ListExpr>($1);
-	}
-	| uses_expr_list ',' identifier_path_as_expr {
-		as(ListExpr, $1)->list.push_back($3);
-		$$ = $1;
-	}
-;
-
-register_expr
-	: REGISTER signature BEGIN code END {
-
-	}
-	| REGISTER signature '=' literal {
-
-	}
+  : identifier_path_as_expr {
+    $$ = std::make_shared<ListExpr>($1);
+  }
+  | uses_expr_list ',' identifier_path_as_expr {
+    as(ListExpr, $1)->list.push_back($3);
+    $$ = $1;
+  }
 ;
 
 everything
-	: UNIT USES REGISTER CONST VAR BEGIN IF THEN ELSE CASE IS END CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON {
-		$$ = std::make_shared<Expr>();
-	}
+  : UNIT USES REGISTER CONST VAR BEGIN IF THEN ELSE CASE IS END CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON {
+    $$ = std::make_shared<Expr>();
+  }
 ;
