@@ -481,7 +481,7 @@ register Entry: record(Logger\Entry) = (
 To use a record, you need to use the `new` keyword to create an instance:
 
 ```pascal
-uses ContextLogger.(Entry, Level);
+uses ContextLogger(Entry, Level);
 
 var entry := new Entry(
 	text    = 'Cannot find record of type %s'.format(User),
@@ -527,7 +527,7 @@ Implementations are like traits, they represent horizontally sharable functional
 ```pascal
 unit Core;
 
-uses io, crono, json, ContextLogger.(Log, Entry);
+uses io, crono, json, ContextLogger(Log, Entry);
 
 register FileLogger(Log): implementation
 begin
@@ -565,7 +565,7 @@ Unlike other object-oriented types, classes cannot extend other classes.  They c
 ```pascal
 unit Core;
 
-use crono, ContextLogger.(Entry, Level);
+use crono, ContextLogger(Entry, Level);
 
 register Application: class(FileLogger)
 begin
