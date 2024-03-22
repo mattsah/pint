@@ -299,7 +299,7 @@ You can combine all the things:
 uses
 	io,
 	app.die,
-	app\utils.rot13 as encrypt,
+	app\utils.rot13 as encrypt
 ;
 ```
 
