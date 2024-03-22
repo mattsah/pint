@@ -5,6 +5,28 @@
   using Value = std::shared_ptr<Node>;
 %}
 
+%token UNIT
+%token USES
+%token CONST
+%token VAR
+%token BEGIN
+%token IF
+%token THEN
+%token ELSE
+%token CASE
+%token IS
+%token END
+%token REGISTER
+%token CONSTRUCTOR
+%token FUNCTION
+%token BOOL
+%token INT
+%token FLOAT
+%token STRING
+%token IDENTIFIER
+%token SEMICOLON
+%token SEPARATOR
+
 %%
 
 code
@@ -34,7 +56,7 @@ identifier_path_expr
   : identifier_expr {
     $$ = std::make_shared<ListNode>($1);
   }
-  | identifier_path_expr '.' identifier_expr {
+  | identifier_path_expr "." identifier_expr {
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
@@ -44,14 +66,14 @@ path_as_expr
   : unit_path_expr {
     $$ = std::make_shared<PathAsNode>(as(ListNode, $1));
   }
-  | unit_path_expr '.' identifier_expr {
+  | unit_path_expr "." identifier_expr {
     $$ = std::make_shared<PathAsNode>(as(ListNode, $1), as(IdentifierNode, $3));
   }
-  | path_as_expr 'as' identifier_expr {
+  | path_as_expr "as" identifier_expr {
     as(PathAsNode, $1)->setAlias(as(IdentifierNode, $3));
     $$ = $1;
   }
-  | unit_path_expr '(' identifier_as_list_expr ')' {
+  | unit_path_expr "(" identifier_as_list_expr ")" {
     $$ = std::make_shared<Node>();
   } 
 ;
@@ -60,7 +82,7 @@ identifier_as_expr
   : identifier_expr {
     $$ = std::make_shared<Node>();
   }
-  | identifier_expr 'as' identifier_expr {
+  | identifier_expr "as" identifier_expr {
     $$ = std::make_shared<Node>();
   }
 ;
@@ -69,7 +91,7 @@ identifier_as_list_expr
   : identifier_as_expr {
     $$ = std::make_shared<Node>();
   }
-  | identifier_as_list_expr ',' identifier_as_expr {
+  | identifier_as_list_expr "," identifier_as_expr {
     $$ = std::make_shared<Node>();
   }
 ;
@@ -100,13 +122,13 @@ uses_list_expr
   : path_as_expr {
     $$ = std::make_shared<ListNode>($1);
   }
-  | uses_list_expr ',' path_as_expr {
+  | uses_list_expr "," path_as_expr {
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
 ;
 
-everything
+everything 
   : UNIT USES CONST VAR BEGIN IF THEN ELSE CASE IS END REGISTER CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON SEPARATOR {
     $$ = std::make_shared<Node>();
   }

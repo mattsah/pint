@@ -533,7 +533,7 @@ std::array<LexRule, Tokenizer::LEX_RULES_COUNT> Tokenizer::lexRules_ = {{
   {std::regex(R"(^true|false)"), &_lexRule23},
   {std::regex(R"(^[0-9])"), &_lexRule24},
   {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule25},
-  {std::regex(R"(^['"](.*?[^\\])?(\\\\)*['"])"), &_lexRule26},
+  {std::regex(R"(^(['"])(.*?[^\\])?(\\\\)*(\1))"), &_lexRule26},
   {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule27},
   {std::regex(R"(^;)"), &_lexRule28},
   {std::regex(R"(^\\)"), &_lexRule29}
