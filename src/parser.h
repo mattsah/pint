@@ -53,7 +53,7 @@
 #include "tree.h"
 
   using namespace pint;
-  using Value = std::shared_ptr<Expr>;  // clang-format on
+  using Value = std::shared_ptr<Node>;  // clang-format on
 
 namespace syntax {
 
@@ -78,31 +78,33 @@ class Tokenizer;
 enum class TokenType {
   __EMPTY = -1,
   // clang-format off
-  SEMICOLON = 10,
-  IDENTIFIER = 11,
-  UNIT = 12,
-  SEPARATOR = 13,
-  USES = 14,
-  REGISTER = 15,
-  CONST = 16,
-  VAR = 17,
-  BEGIN = 18,
-  IF = 19,
-  THEN = 20,
-  ELSE = 21,
-  CASE = 22,
-  IS = 23,
-  END = 24,
-  CONSTRUCTOR = 25,
-  FUNCTION = 26,
-  BOOL = 27,
-  INT = 28,
-  FLOAT = 29,
-  STRING = 30,
-  TOKEN_TYPE_31 = 31,
-  TOKEN_TYPE_32 = 32,
+  SEMICOLON = 12,
+  IDENTIFIER = 13,
+  UNIT = 14,
+  SEPARATOR = 15,
+  USES = 16,
+  CONST = 17,
+  VAR = 18,
+  BEGIN = 19,
+  IF = 20,
+  THEN = 21,
+  ELSE = 22,
+  CASE = 23,
+  IS = 24,
+  END = 25,
+  REGISTER = 26,
+  CONSTRUCTOR = 27,
+  FUNCTION = 28,
+  BOOL = 29,
+  INT = 30,
+  FLOAT = 31,
+  STRING = 32,
   TOKEN_TYPE_33 = 33,
-  __EOF = 34
+  TOKEN_TYPE_34 = 34,
+  TOKEN_TYPE_35 = 35,
+  TOKEN_TYPE_36 = 36,
+  TOKEN_TYPE_37 = 37,
+  __EOF = 38
   // clang-format on
 };
 
@@ -335,7 +337,7 @@ class Tokenizer {
    * Lexical rules.
    */
   // clang-format off
-  static constexpr size_t LEX_RULES_COUNT = 27;
+  static constexpr size_t LEX_RULES_COUNT = 29;
   static std::array<LexRule, LEX_RULES_COUNT> lexRules_;
   static std::map<TokenizerState, std::vector<size_t>> lexRulesByStartConditions_;
   // clang-format on
@@ -385,23 +387,23 @@ std::string Tokenizer::__EOF("$");
 
 // clang-format off
 inline TokenType _lexRule1(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::TOKEN_TYPE_31;
-}
-
-inline TokenType _lexRule2(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::TOKEN_TYPE_32;
-}
-
-inline TokenType _lexRule3(const Tokenizer& tokenizer, const std::string& yytext) {
 return TokenType::TOKEN_TYPE_33;
 }
 
+inline TokenType _lexRule2(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::TOKEN_TYPE_34;
+}
+
+inline TokenType _lexRule3(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::TOKEN_TYPE_35;
+}
+
 inline TokenType _lexRule4(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::__EMPTY;
+return TokenType::TOKEN_TYPE_36;
 }
 
 inline TokenType _lexRule5(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::__EMPTY;
+return TokenType::TOKEN_TYPE_37;
 }
 
 inline TokenType _lexRule6(const Tokenizer& tokenizer, const std::string& yytext) {
@@ -409,86 +411,94 @@ return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule7(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::UNIT;
+return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule8(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::USES;
+return TokenType::__EMPTY;
 }
 
 inline TokenType _lexRule9(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CONST;
+return TokenType::UNIT;
 }
 
 inline TokenType _lexRule10(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::VAR;
+return TokenType::USES;
 }
 
 inline TokenType _lexRule11(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::BEGIN;
+return TokenType::CONST;
 }
 
 inline TokenType _lexRule12(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IF;
+return TokenType::VAR;
 }
 
 inline TokenType _lexRule13(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::THEN;
+return TokenType::BEGIN;
 }
 
 inline TokenType _lexRule14(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::ELSE;
+return TokenType::IF;
 }
 
 inline TokenType _lexRule15(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CASE;
+return TokenType::THEN;
 }
 
 inline TokenType _lexRule16(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IS;
+return TokenType::ELSE;
 }
 
 inline TokenType _lexRule17(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::END;
+return TokenType::CASE;
 }
 
 inline TokenType _lexRule18(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::REGISTER;
+return TokenType::IS;
 }
 
 inline TokenType _lexRule19(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::CONSTRUCTOR;
+return TokenType::END;
 }
 
 inline TokenType _lexRule20(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::FUNCTION;
+return TokenType::REGISTER;
 }
 
 inline TokenType _lexRule21(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::BOOL;
+return TokenType::CONSTRUCTOR;
 }
 
 inline TokenType _lexRule22(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::INT;
+return TokenType::FUNCTION;
 }
 
 inline TokenType _lexRule23(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::FLOAT;
+return TokenType::BOOL;
 }
 
 inline TokenType _lexRule24(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::STRING;
+return TokenType::INT;
 }
 
 inline TokenType _lexRule25(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::IDENTIFIER;
+return TokenType::FLOAT;
 }
 
 inline TokenType _lexRule26(const Tokenizer& tokenizer, const std::string& yytext) {
-return TokenType::SEMICOLON;
+return TokenType::STRING;
 }
 
 inline TokenType _lexRule27(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::IDENTIFIER;
+}
+
+inline TokenType _lexRule28(const Tokenizer& tokenizer, const std::string& yytext) {
+return TokenType::SEMICOLON;
+}
+
+inline TokenType _lexRule29(const Tokenizer& tokenizer, const std::string& yytext) {
 return TokenType::SEPARATOR;
 }
 // clang-format on
@@ -500,33 +510,35 @@ return TokenType::SEPARATOR;
 std::array<LexRule, Tokenizer::LEX_RULES_COUNT> Tokenizer::lexRules_ = {{
   {std::regex(R"(^\.)"), &_lexRule1},
   {std::regex(R"(^as)"), &_lexRule2},
-  {std::regex(R"(^,)"), &_lexRule3},
-  {std::regex(R"(^\s+)"), &_lexRule4},
-  {std::regex(R"(^\{[^\}]*\})"), &_lexRule5},
-  {std::regex(R"(^\/\/.*\n)"), &_lexRule6},
-  {std::regex(R"(^unit)"), &_lexRule7},
-  {std::regex(R"(^uses)"), &_lexRule8},
-  {std::regex(R"(^const)"), &_lexRule9},
-  {std::regex(R"(^var)"), &_lexRule10},
-  {std::regex(R"(^begin)"), &_lexRule11},
-  {std::regex(R"(^if)"), &_lexRule12},
-  {std::regex(R"(^then)"), &_lexRule13},
-  {std::regex(R"(^else)"), &_lexRule14},
-  {std::regex(R"(^case)"), &_lexRule15},
-  {std::regex(R"(^is)"), &_lexRule16},
-  {std::regex(R"(^end)"), &_lexRule17},
-  {std::regex(R"(^register)"), &_lexRule18},
-  {std::regex(R"(^constructor)"), &_lexRule19},
-  {std::regex(R"(^function)"), &_lexRule20},
-  {std::regex(R"(^true|false)"), &_lexRule21},
-  {std::regex(R"(^[0-9])"), &_lexRule22},
-  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule23},
-  {std::regex(R"(^['"](.*?[^\\])?(\\\\)*['"])"), &_lexRule24},
-  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule25},
-  {std::regex(R"(^;)"), &_lexRule26},
-  {std::regex(R"(^\\)"), &_lexRule27}
+  {std::regex(R"(^\()"), &_lexRule3},
+  {std::regex(R"(^\))"), &_lexRule4},
+  {std::regex(R"(^,)"), &_lexRule5},
+  {std::regex(R"(^\s+)"), &_lexRule6},
+  {std::regex(R"(^\{[^\}]*\})"), &_lexRule7},
+  {std::regex(R"(^\/\/.*\n)"), &_lexRule8},
+  {std::regex(R"(^unit)"), &_lexRule9},
+  {std::regex(R"(^uses)"), &_lexRule10},
+  {std::regex(R"(^const)"), &_lexRule11},
+  {std::regex(R"(^var)"), &_lexRule12},
+  {std::regex(R"(^begin)"), &_lexRule13},
+  {std::regex(R"(^if)"), &_lexRule14},
+  {std::regex(R"(^then)"), &_lexRule15},
+  {std::regex(R"(^else)"), &_lexRule16},
+  {std::regex(R"(^case)"), &_lexRule17},
+  {std::regex(R"(^is)"), &_lexRule18},
+  {std::regex(R"(^end)"), &_lexRule19},
+  {std::regex(R"(^register)"), &_lexRule20},
+  {std::regex(R"(^constructor)"), &_lexRule21},
+  {std::regex(R"(^function)"), &_lexRule22},
+  {std::regex(R"(^true|false)"), &_lexRule23},
+  {std::regex(R"(^[0-9])"), &_lexRule24},
+  {std::regex(R"(^[0-9]+\.[0-9]+)"), &_lexRule25},
+  {std::regex(R"(^['"](.*?[^\\])?(\\\\)*['"])"), &_lexRule26},
+  {std::regex(R"(^[a-zA-Z_][a-zA-Z0-9_]*)"), &_lexRule27},
+  {std::regex(R"(^;)"), &_lexRule28},
+  {std::regex(R"(^\\)"), &_lexRule29}
 }};
-std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26}}};
+std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditions_ =  {{TokenizerState::INITIAL, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28}}};
 // clang-format on
 
 #endif
@@ -728,10 +740,10 @@ class parser {
   }
 
   // clang-format off
-  static constexpr size_t PRODUCTIONS_COUNT = 18;
+  static constexpr size_t PRODUCTIONS_COUNT = 23;
   static std::array<Production, PRODUCTIONS_COUNT> productions_;
 
-  static constexpr size_t ROWS_COUNT = 24;
+  static constexpr size_t ROWS_COUNT = 33;
   static std::array<Row, ROWS_COUNT> table_;
   // clang-format on
 };
@@ -756,7 +768,7 @@ void _handler2(yyparse& parser) {
 parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
-auto __ = std::make_shared<ListExpr>(_1);
+auto __ = std::make_shared<ListNode>(_1);
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -769,7 +781,7 @@ parser.tokensStack.pop_back();
 auto _2 = POP_V();
 auto _1 = POP_V();
 
-as(ListExpr, _1)->list.push_back(_2);
+as(ListNode, _1)->list.push_back(_2);
     auto __ = _1;
 
  // Semantic action epilogue.
@@ -803,7 +815,7 @@ void _handler6(yyparse& parser) {
 // Semantic action prologue.
 auto _1 = POP_T();
 
-auto __ = std::make_shared<IdentifierExpr>(_1);
+auto __ = std::make_shared<IdentifierNode>(_1);
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -814,8 +826,7 @@ void _handler7(yyparse& parser) {
 // Semantic action prologue.
 auto _1 = POP_V();
 
-auto __ = std::make_shared<ListExpr>(_1); // TODO: customize
-  ;
+auto __ = std::make_shared<ListNode>(_1);
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -828,7 +839,7 @@ auto _3 = POP_V();
 parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
-as(ListExpr, _1)->list.push_back(_3);
+as(ListNode, _1)->list.push_back(_3);
     auto __ = _1;
 
  // Semantic action epilogue.
@@ -840,7 +851,7 @@ void _handler9(yyparse& parser) {
 // Semantic action prologue.
 auto _1 = POP_V();
 
-auto __ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, _1));
+auto __ = std::make_shared<PathAsNode>(as(ListNode, _1));
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -853,7 +864,7 @@ auto _3 = POP_V();
 parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
-auto __ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, _1), as(IdentifierExpr, _3));
+auto __ = std::make_shared<PathAsNode>(as(ListNode, _1), as(IdentifierNode, _3));
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -866,7 +877,7 @@ auto _3 = POP_V();
 parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
-as(IdentifierPathAsExpr, _1)->setAlias(as(IdentifierExpr, _3));
+as(PathAsNode, _1)->setAlias(as(IdentifierNode, _3));
     auto __ = _1;
 
  // Semantic action epilogue.
@@ -876,10 +887,12 @@ PUSH_VR();
 
 void _handler12(yyparse& parser) {
 // Semantic action prologue.
-auto _2 = POP_V();
 parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
+parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
 
-auto __ = std::make_shared<UnitExpr>(as(ListExpr, _2));
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -888,9 +901,9 @@ PUSH_VR();
 
 void _handler13(yyparse& parser) {
 // Semantic action prologue.
-auto _1 = POP_V();
+parser.valuesStack.pop_back();
 
-auto __ = std::make_shared<ListExpr>(_1);
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -899,12 +912,11 @@ PUSH_VR();
 
 void _handler14(yyparse& parser) {
 // Semantic action prologue.
-auto _3 = POP_V();
+parser.valuesStack.pop_back();
 parser.tokensStack.pop_back();
-auto _1 = POP_V();
+parser.valuesStack.pop_back();
 
-as(ListExpr, _1)->list.push_back(_3);
-    auto __ = _1;
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -913,10 +925,9 @@ PUSH_VR();
 
 void _handler15(yyparse& parser) {
 // Semantic action prologue.
-auto _2 = POP_V();
-parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
 
-auto __ = std::make_shared<UsesExpr>(as(ListExpr, _2));
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -925,9 +936,11 @@ PUSH_VR();
 
 void _handler16(yyparse& parser) {
 // Semantic action prologue.
-auto _1 = POP_V();
+parser.valuesStack.pop_back();
+parser.tokensStack.pop_back();
+parser.valuesStack.pop_back();
 
-auto __ = std::make_shared<ListExpr>(_1);
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -936,12 +949,10 @@ PUSH_VR();
 
 void _handler17(yyparse& parser) {
 // Semantic action prologue.
-auto _3 = POP_V();
+auto _2 = POP_V();
 parser.tokensStack.pop_back();
-auto _1 = POP_V();
 
-as(ListExpr, _1)->list.push_back(_3);
-    auto __ = _1;
+auto __ = std::make_shared<UnitNode>(as(ListNode, _2));
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -949,6 +960,68 @@ PUSH_VR();
 }
 
 void _handler18(yyparse& parser) {
+// Semantic action prologue.
+auto _1 = POP_V();
+
+auto __ = std::make_shared<ListNode>(_1);
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler19(yyparse& parser) {
+// Semantic action prologue.
+auto _3 = POP_V();
+parser.tokensStack.pop_back();
+auto _1 = POP_V();
+
+as(ListNode, _1)->list.push_back(_3);
+    auto __ = _1;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler20(yyparse& parser) {
+// Semantic action prologue.
+auto _2 = POP_V();
+parser.tokensStack.pop_back();
+
+auto __ = std::make_shared<UsesNode>(as(ListNode, _2));
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler21(yyparse& parser) {
+// Semantic action prologue.
+auto _1 = POP_V();
+
+auto __ = std::make_shared<ListNode>(_1);
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler22(yyparse& parser) {
+// Semantic action prologue.
+auto _3 = POP_V();
+parser.tokensStack.pop_back();
+auto _1 = POP_V();
+
+as(ListNode, _1)->list.push_back(_3);
+    auto __ = _1;
+
+ // Semantic action epilogue.
+PUSH_VR();
+
+}
+
+void _handler23(yyparse& parser) {
 // Semantic action prologue.
 parser.tokensStack.pop_back();
 parser.tokensStack.pop_back();
@@ -970,8 +1043,9 @@ parser.tokensStack.pop_back();
 parser.tokensStack.pop_back();
 parser.tokensStack.pop_back();
 parser.tokensStack.pop_back();
+parser.tokensStack.pop_back();
 
-auto __ = std::make_shared<Expr>();
+auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -991,13 +1065,18 @@ std::array<Production, yyparse::PRODUCTIONS_COUNT> yyparse::productions_ = {{{-1
 {4, 1, &_handler9},
 {4, 3, &_handler10},
 {4, 3, &_handler11},
-{5, 2, &_handler12},
-{6, 1, &_handler13},
-{6, 3, &_handler14},
-{7, 2, &_handler15},
-{8, 1, &_handler16},
-{8, 3, &_handler17},
-{9, 20, &_handler18}}};
+{4, 4, &_handler12},
+{5, 1, &_handler13},
+{5, 3, &_handler14},
+{6, 1, &_handler15},
+{6, 3, &_handler16},
+{7, 2, &_handler17},
+{8, 1, &_handler18},
+{8, 3, &_handler19},
+{9, 2, &_handler20},
+{10, 1, &_handler21},
+{10, 3, &_handler22},
+{11, 21, &_handler23}}};
 // clang-format on
 
 // ------------------------------------------------------------------
@@ -1005,30 +1084,39 @@ std::array<Production, yyparse::PRODUCTIONS_COUNT> yyparse::productions_ = {{{-1
 
 // clang-format off
 std::array<Row, yyparse::ROWS_COUNT> yyparse::table_ = {
-    Row {{0, {TE::Transit, 1}}, {1, {TE::Transit, 2}}, {5, {TE::Transit, 3}}, {7, {TE::Transit, 4}}, {12, {TE::Shift, 5}}, {14, {TE::Shift, 6}}},
-    Row {{1, {TE::Transit, 7}}, {5, {TE::Transit, 3}}, {7, {TE::Transit, 4}}, {12, {TE::Shift, 5}}, {14, {TE::Shift, 6}}, {34, {TE::Accept, 0}}},
-    Row {{10, {TE::Shift, 23}}},
-    Row {{10, {TE::Reduce, 3}}},
-    Row {{10, {TE::Reduce, 4}}},
-    Row {{2, {TE::Transit, 10}}, {6, {TE::Transit, 9}}, {11, {TE::Shift, 11}}},
-    Row {{2, {TE::Transit, 10}}, {4, {TE::Transit, 15}}, {6, {TE::Transit, 16}}, {8, {TE::Transit, 14}}, {11, {TE::Shift, 11}}},
-    Row {{10, {TE::Shift, 8}}},
-    Row {{12, {TE::Reduce, 2}}, {14, {TE::Reduce, 2}}, {34, {TE::Reduce, 2}}},
-    Row {{10, {TE::Reduce, 11}}, {13, {TE::Shift, 12}}},
-    Row {{10, {TE::Reduce, 12}}, {13, {TE::Reduce, 12}}, {31, {TE::Reduce, 12}}, {32, {TE::Reduce, 12}}, {33, {TE::Reduce, 12}}},
-    Row {{10, {TE::Reduce, 5}}, {13, {TE::Reduce, 5}}, {31, {TE::Reduce, 5}}, {32, {TE::Reduce, 5}}, {33, {TE::Reduce, 5}}},
-    Row {{2, {TE::Transit, 13}}, {11, {TE::Shift, 11}}},
-    Row {{10, {TE::Reduce, 13}}, {13, {TE::Reduce, 13}}, {31, {TE::Reduce, 13}}, {32, {TE::Reduce, 13}}, {33, {TE::Reduce, 13}}},
-    Row {{10, {TE::Reduce, 14}}, {33, {TE::Shift, 17}}},
-    Row {{10, {TE::Reduce, 15}}, {32, {TE::Shift, 19}}, {33, {TE::Reduce, 15}}},
-    Row {{10, {TE::Reduce, 8}}, {13, {TE::Shift, 12}}, {31, {TE::Shift, 21}}, {32, {TE::Reduce, 8}}, {33, {TE::Reduce, 8}}},
-    Row {{2, {TE::Transit, 10}}, {4, {TE::Transit, 18}}, {6, {TE::Transit, 16}}, {11, {TE::Shift, 11}}},
-    Row {{10, {TE::Reduce, 16}}, {32, {TE::Shift, 19}}, {33, {TE::Reduce, 16}}},
-    Row {{2, {TE::Transit, 20}}, {11, {TE::Shift, 11}}},
-    Row {{10, {TE::Reduce, 10}}, {32, {TE::Reduce, 10}}, {33, {TE::Reduce, 10}}},
-    Row {{2, {TE::Transit, 22}}, {11, {TE::Shift, 11}}},
-    Row {{10, {TE::Reduce, 9}}, {32, {TE::Reduce, 9}}, {33, {TE::Reduce, 9}}},
-    Row {{12, {TE::Reduce, 1}}, {14, {TE::Reduce, 1}}, {34, {TE::Reduce, 1}}}
+    Row {{0, {TE::Transit, 1}}, {1, {TE::Transit, 2}}, {7, {TE::Transit, 3}}, {9, {TE::Transit, 4}}, {14, {TE::Shift, 5}}, {16, {TE::Shift, 6}}},
+    Row {{1, {TE::Transit, 7}}, {7, {TE::Transit, 3}}, {9, {TE::Transit, 4}}, {14, {TE::Shift, 5}}, {16, {TE::Shift, 6}}, {38, {TE::Accept, 0}}},
+    Row {{12, {TE::Shift, 32}}},
+    Row {{12, {TE::Reduce, 3}}},
+    Row {{12, {TE::Reduce, 4}}},
+    Row {{2, {TE::Transit, 10}}, {8, {TE::Transit, 9}}, {13, {TE::Shift, 11}}},
+    Row {{2, {TE::Transit, 10}}, {4, {TE::Transit, 15}}, {8, {TE::Transit, 16}}, {10, {TE::Transit, 14}}, {13, {TE::Shift, 11}}},
+    Row {{12, {TE::Shift, 8}}},
+    Row {{14, {TE::Reduce, 2}}, {16, {TE::Reduce, 2}}, {38, {TE::Reduce, 2}}},
+    Row {{12, {TE::Reduce, 16}}, {15, {TE::Shift, 12}}},
+    Row {{12, {TE::Reduce, 17}}, {15, {TE::Reduce, 17}}, {33, {TE::Reduce, 17}}, {34, {TE::Reduce, 17}}, {35, {TE::Reduce, 17}}, {37, {TE::Reduce, 17}}},
+    Row {{12, {TE::Reduce, 5}}, {15, {TE::Reduce, 5}}, {33, {TE::Reduce, 5}}, {34, {TE::Reduce, 5}}, {35, {TE::Reduce, 5}}, {36, {TE::Reduce, 5}}, {37, {TE::Reduce, 5}}},
+    Row {{2, {TE::Transit, 13}}, {13, {TE::Shift, 11}}},
+    Row {{12, {TE::Reduce, 18}}, {15, {TE::Reduce, 18}}, {33, {TE::Reduce, 18}}, {34, {TE::Reduce, 18}}, {35, {TE::Reduce, 18}}, {37, {TE::Reduce, 18}}},
+    Row {{12, {TE::Reduce, 19}}, {37, {TE::Shift, 17}}},
+    Row {{12, {TE::Reduce, 20}}, {34, {TE::Shift, 19}}, {37, {TE::Reduce, 20}}},
+    Row {{12, {TE::Reduce, 8}}, {15, {TE::Shift, 12}}, {33, {TE::Shift, 21}}, {34, {TE::Reduce, 8}}, {35, {TE::Shift, 22}}, {37, {TE::Reduce, 8}}},
+    Row {{2, {TE::Transit, 10}}, {4, {TE::Transit, 18}}, {8, {TE::Transit, 16}}, {13, {TE::Shift, 11}}},
+    Row {{12, {TE::Reduce, 21}}, {34, {TE::Shift, 19}}, {37, {TE::Reduce, 21}}},
+    Row {{2, {TE::Transit, 20}}, {13, {TE::Shift, 11}}},
+    Row {{12, {TE::Reduce, 10}}, {34, {TE::Reduce, 10}}, {37, {TE::Reduce, 10}}},
+    Row {{2, {TE::Transit, 23}}, {13, {TE::Shift, 11}}},
+    Row {{2, {TE::Transit, 26}}, {5, {TE::Transit, 25}}, {6, {TE::Transit, 24}}, {13, {TE::Shift, 11}}},
+    Row {{12, {TE::Reduce, 9}}, {34, {TE::Reduce, 9}}, {37, {TE::Reduce, 9}}},
+    Row {{36, {TE::Shift, 27}}, {37, {TE::Shift, 28}}},
+    Row {{36, {TE::Reduce, 14}}, {37, {TE::Reduce, 14}}},
+    Row {{34, {TE::Shift, 30}}, {36, {TE::Reduce, 12}}, {37, {TE::Reduce, 12}}},
+    Row {{12, {TE::Reduce, 11}}, {34, {TE::Reduce, 11}}, {37, {TE::Reduce, 11}}},
+    Row {{2, {TE::Transit, 26}}, {5, {TE::Transit, 29}}, {13, {TE::Shift, 11}}},
+    Row {{36, {TE::Reduce, 15}}, {37, {TE::Reduce, 15}}},
+    Row {{2, {TE::Transit, 31}}, {13, {TE::Shift, 11}}},
+    Row {{36, {TE::Reduce, 13}}, {37, {TE::Reduce, 13}}},
+    Row {{14, {TE::Reduce, 1}}, {16, {TE::Reduce, 1}}, {38, {TE::Reduce, 1}}}
 };
 // clang-format on
 

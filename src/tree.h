@@ -10,74 +10,74 @@
 
 namespace pint {
 	/**
-	 * Expression.
+	 * Nodeession.
 	 */
-	class Expr {
+	class Node {
 		public:
-			virtual ~ Expr() {}
+			virtual ~ Node() {}
 	};
 
 
-	class ListExpr: public Expr {
+	class ListNode: public Node {
 		public:
-			std::vector<std::shared_ptr<Expr>> list;
+			std::vector<std::shared_ptr<Node>> list;
 
-			ListExpr() {
-				this->list = std::vector<std::shared_ptr<Expr>>{};
+			ListNode() {
+				this->list = std::vector<std::shared_ptr<Node>>{};
 			}
 
-			ListExpr(std::shared_ptr<Expr> item) {
-				this->list = std::vector<std::shared_ptr<Expr>>{item};
+			ListNode(std::shared_ptr<Node> item) {
+				this->list = std::vector<std::shared_ptr<Node>>{item};
 			}
 	};
 
-	class IdentifierExpr: public Expr {
+	class IdentifierNode: public Node {
 		public:
 			std::string name;
 
-			IdentifierExpr(std::string name) {
+			IdentifierNode(std::string name) {
 				this->name = name;
 			}
 	};
 
-	class UnitExpr: public Expr {
+	class UnitNode: public Node {
 		public:
-			std::shared_ptr<ListExpr> path;
+			std::shared_ptr<ListNode> path;
 
-			UnitExpr(std::shared_ptr<ListExpr> path) {
+			UnitNode(std::shared_ptr<ListNode> path) {
 				this->path = path;
 				std::cout << "Unit path length: " << this->path->list.size() << std::endl;
 			}
 	};
 
-	class UsesExpr: public Expr {
+	class UsesNode: public Node {
 		public:
-			std::shared_ptr<ListExpr> imports;
+			std::shared_ptr<ListNode> imports;
 
-			UsesExpr(std::shared_ptr<ListExpr> imports) {
+			UsesNode(std::shared_ptr<ListNode> imports) {
 				this->imports = imports;
 				std::cout << "Total imports: " << this->imports->list.size() << std::endl;
 			}
 	};
 
-	class IdentifierPathAsExpr: public Expr {
+	class PathAsNode: public Node {
 		public:
-			std::shared_ptr<ListExpr> path;
-			std::shared_ptr<IdentifierExpr> member;
-			std::shared_ptr<IdentifierExpr> alias;
+			std::shared_ptr<ListNode> path;
+			std::shared_ptr<IdentifierNode> member;
+			std::shared_ptr<IdentifierNode> alias;
 
-			IdentifierPathAsExpr(std::shared_ptr<ListExpr> path) {
+			PathAsNode(std::shared_ptr<ListNode> path) {
 				this->path  = path;
-				this->alias = as(IdentifierExpr, path->list.back());
+				this->alias = as(IdentifierNode, path->list.back());
 			}
 
-			IdentifierPathAsExpr(std::shared_ptr<ListExpr> path, std::shared_ptr<IdentifierExpr> member) {
+			PathAsNode(std::shared_ptr<ListNode> path, std::shared_ptr<IdentifierNode> member) {
 				this->path   = path;
 				this->member = member;
 				this->alias  = member;
 			}
 
-			void setAlias(std::shared_ptr<IdentifierExpr> alias) {
+			void setAlias(std::shared_ptr<IdentifierNode> alias) {
 				this->alias = alias;
 			}
 	};

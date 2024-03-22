@@ -25,7 +25,7 @@ namespace pint {
 			/**
 			 *
 			 */
-			void exec(const Expr &node) {
+			void exec(const Node &node) {
 
 			}
 	};

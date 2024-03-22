@@ -2,91 +2,112 @@
   #include "tree.h"
 
   using namespace pint;
-  using Value = std::shared_ptr<Expr>;
+  using Value = std::shared_ptr<Node>;
 %}
 
 %%
 
 code
-  : expr SEMICOLON {
-    $$ = std::make_shared<ListExpr>($1);
+  : stmt SEMICOLON {
+    $$ = std::make_shared<ListNode>($1);
   }
-  | code expr SEMICOLON {
-    as(ListExpr, $1)->list.push_back($2);
+  | code stmt SEMICOLON {
+    as(ListNode, $1)->list.push_back($2);
     $$ = $1;
   }
 ;
 
-expr
-  : unit_expr
-  | uses_expr {
+stmt
+  : unit_stmt
+  | uses_stmt {
     $$ = $1;
   }
 ;
 
 identifier_expr
   : IDENTIFIER {
-    $$ = std::make_shared<IdentifierExpr>($1);
+    $$ = std::make_shared<IdentifierNode>($1);
   }
 ;
 
 identifier_path_expr
   : identifier_expr {
-    $$ = std::make_shared<ListExpr>($1); // TODO: customize
+    $$ = std::make_shared<ListNode>($1);
   }
   | identifier_path_expr '.' identifier_expr {
-    as(ListExpr, $1)->list.push_back($3);
+    as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
 ;
 
-identifier_path_as_expr
-  : unit_expr_path {
-    $$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1));
+path_as_expr
+  : unit_path_expr {
+    $$ = std::make_shared<PathAsNode>(as(ListNode, $1));
   }
-  | unit_expr_path '.' identifier_expr {
-    $$ = std::make_shared<IdentifierPathAsExpr>(as(ListExpr, $1), as(IdentifierExpr, $3));
+  | unit_path_expr '.' identifier_expr {
+    $$ = std::make_shared<PathAsNode>(as(ListNode, $1), as(IdentifierNode, $3));
   }
-  | identifier_path_as_expr 'as' identifier_expr {
-    as(IdentifierPathAsExpr, $1)->setAlias(as(IdentifierExpr, $3));
+  | path_as_expr 'as' identifier_expr {
+    as(PathAsNode, $1)->setAlias(as(IdentifierNode, $3));
     $$ = $1;
   }
+  | unit_path_expr '(' identifier_as_list_expr ')' {
+    $$ = std::make_shared<Node>();
+  } 
 ;
 
-unit_expr
-  : UNIT unit_expr_path {
-    $$ = std::make_shared<UnitExpr>(as(ListExpr, $2));
-  }
-;
-
-unit_expr_path
+identifier_as_expr
   : identifier_expr {
-    $$ = std::make_shared<ListExpr>($1);
+    $$ = std::make_shared<Node>();
   }
-  | unit_expr_path SEPARATOR identifier_expr {
-    as(ListExpr, $1)->list.push_back($3);
+  | identifier_expr 'as' identifier_expr {
+    $$ = std::make_shared<Node>();
+  }
+;
+
+identifier_as_list_expr
+  : identifier_as_expr {
+    $$ = std::make_shared<Node>();
+  }
+  | identifier_as_list_expr ',' identifier_as_expr {
+    $$ = std::make_shared<Node>();
+  }
+;
+
+unit_stmt
+  : UNIT unit_path_expr {
+    $$ = std::make_shared<UnitNode>(as(ListNode, $2));
+  }
+;
+
+unit_path_expr
+  : identifier_expr {
+    $$ = std::make_shared<ListNode>($1);
+  }
+  | unit_path_expr SEPARATOR identifier_expr {
+    as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
 ;
 
-uses_expr
-  : USES uses_expr_list {
-    $$ = std::make_shared<UsesExpr>(as(ListExpr, $2));
+uses_stmt
+  : USES uses_list_expr {
+    $$ = std::make_shared<UsesNode>(as(ListNode, $2));
   }
 ;
 
-uses_expr_list
-  : identifier_path_as_expr {
-    $$ = std::make_shared<ListExpr>($1);
+uses_list_expr
+  : path_as_expr {
+    $$ = std::make_shared<ListNode>($1);
   }
-  | uses_expr_list ',' identifier_path_as_expr {
-    as(ListExpr, $1)->list.push_back($3);
+  | uses_list_expr ',' path_as_expr {
+    as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
 ;
 
 everything
-  : UNIT USES REGISTER CONST VAR BEGIN IF THEN ELSE CASE IS END CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON {
-    $$ = std::make_shared<Expr>();
+  : UNIT USES CONST VAR BEGIN IF THEN ELSE CASE IS END REGISTER CONSTRUCTOR FUNCTION BOOL INT FLOAT STRING IDENTIFIER SEMICOLON SEPARATOR {
+    $$ = std::make_shared<Node>();
   }
 ;
