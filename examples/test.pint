@@ -1,7 +1,7 @@
 {
 	Declare the unit
 }
-unit main;
+unit mainUnit;
 
 {
 	Import examples
@@ -26,4 +26,9 @@ uses
 		CarRepository as Cars
 	)
 ;
+
+register main: function(argc: integer; argv: string[]): void
+begin
+test ;
+end
 

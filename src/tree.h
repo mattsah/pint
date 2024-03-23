@@ -46,7 +46,6 @@ namespace pint {
 
 			UnitNode(std::shared_ptr<ListNode> path) {
 				this->path = path;
-				std::cout << "Unit path length: " << this->path->list.size() << std::endl;
 			}
 	};
 
@@ -56,7 +55,6 @@ namespace pint {
 
 			UsesNode(std::shared_ptr<ListNode> imports) {
 				this->imports = imports;
-				std::cout << "Total imports: " << this->imports->list.size() << std::endl;
 			}
 	};
 
