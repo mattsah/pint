@@ -618,10 +618,7 @@ std::map<TokenizerState, std::vector<size_t>> Tokenizer::lexRulesByStartConditio
   parser.tokensStack.back(); \
   parser.tokensStack.pop_back()
 
-#define PUSH_VR()  \
-  parser.valuesStack.push_back(__); \
-  std::cout << "current VALUES: " << parser.valuesStack.size() << std::endl;
-
+#define PUSH_VR() parser.valuesStack.push_back(__)
 #define PUSH_TR() parser.tokensStack.push_back(__)
 
 /**
@@ -837,7 +834,6 @@ void _handler2(yyparse& parser) {
 
 
 auto __ = std::make_shared<ListNode>();
-    std::cout << "empty code : make list" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -849,8 +845,7 @@ void _handler3(yyparse& parser) {
 auto _2 = POP_V();
 auto _1 = POP_V();
 
-std::cout << "code code_line : add to list" << std::endl;
-    as(ListNode, _1)->list.push_back(_2);
+as(ListNode, _1)->list.push_back(_2);
     auto __ = _1;
 
  // Semantic action epilogue.
@@ -885,7 +880,6 @@ void _handler6(yyparse& parser) {
 auto _1 = POP_V();
 
 auto __ = _1;
-    std::cout << "code line : passtru" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -897,7 +891,6 @@ void _handler7(yyparse& parser) {
 
 
 auto __ = std::make_shared<ListNode>();
-    std::cout << "empty body: make list" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -909,10 +902,8 @@ void _handler8(yyparse& parser) {
 auto _2 = POP_V();
 auto _1 = POP_V();
 
-std::cout << "body body_line : add to list" << std::endl;
-    as(ListNode, _1)->list.push_back(_2);
+as(ListNode, _1)->list.push_back(_2);
     auto __ = _1;
-    std::cout << "DONE: body body_line : add to list" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -925,7 +916,6 @@ parser.tokensStack.pop_back();
 parser.tokensStack.pop_back();
 
 auto __ = std::make_shared<Node>();
-    std::cout << "test; in body_line : make node" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -938,7 +928,6 @@ auto _1 = POP_T();
 
 // identifier
     auto __ = std::make_shared<IdentifierNode>(_1);
-    std::cout << "identifier : make node: " << _1 << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1157,7 +1146,6 @@ parser.valuesStack.pop_back();
 parser.tokensStack.pop_back();
 
 auto __ = std::make_shared<Node>();
-    std::cout << "1. register identifier : type_form_decl = body_line : make node and return TokenType::it" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1175,7 +1163,6 @@ parser.tokensStack.pop_back();
 
 // register: function =
     auto __ = std::make_shared<Node>();
-    std::cout << "2. register identifier : type_func_decl = body_line : make node and return TokenType::it" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1194,7 +1181,6 @@ parser.tokensStack.pop_back();
 
 // register: function body
     auto __ = std::make_shared<Node>();
-    std::cout << "3. register identifier : type_func_decl begin body end : make node and return TokenType::it" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1212,7 +1198,6 @@ parser.valuesStack.pop_back();
 parser.tokensStack.pop_back();
 
 auto __ = std::make_shared<Node>();
-    std::cout << "4. register identifier : type_tmpl_decl begin body end : make node and return TokenType::it" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1270,7 +1255,6 @@ void _handler35(yyparse& parser) {
 parser.valuesStack.pop_back();
 
 // return: void
-    std::cout << "void ret: make node and ret it" << std::endl;
     auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
@@ -1283,7 +1267,6 @@ void _handler36(yyparse& parser) {
 parser.valuesStack.pop_back();
 
 // return: type
-    std::cout << "type in ret : make node and ret it" << std::endl;
     auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
@@ -1459,8 +1442,7 @@ parser.valuesStack.pop_back();
 parser.tokensStack.pop_back();
 parser.valuesStack.pop_back();
 
-std::cout << "type_func(arg_list):ret in type_func_decl :: make node and return TokenType::it" << std::endl;
-    // type_func_decl
+// type_func_decl
     auto __ = std::make_shared<Node>();
 
  // Semantic action epilogue.
@@ -1489,7 +1471,6 @@ void _handler52(yyparse& parser) {
 auto _1 = POP_V();
 
 auto __ = std::make_shared<ListNode>(_1);
-    std::cout << "identifier: make list and return TokenType::it" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1502,8 +1483,7 @@ auto _3 = POP_V();
 parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
-std::cout << "identifier_list ',' identifier: add to list and return TokenType::it" << std::endl;
-    as(ListNode, _1)->list.push_back(_3);
+as(ListNode, _1)->list.push_back(_3);
     auto __ = _1;
 
  // Semantic action epilogue.
@@ -1516,7 +1496,6 @@ void _handler54(yyparse& parser) {
 auto _1 = POP_V();
 
 auto __ = _1;
-    std::cout << "identifier_list : pass thru " << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1530,7 +1509,6 @@ parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
 auto __ = _1;
-    std::cout << "identifier_list COLON type in arg : pass thru" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1542,7 +1520,6 @@ void _handler56(yyparse& parser) {
 auto _1 = POP_V();
 
 // arg
-    std::cout << "single arg in arg_set (make a list)" << std::endl;
     auto __ = std::make_shared<ListNode>(_1);
 
  // Semantic action epilogue.
@@ -1557,10 +1534,8 @@ parser.tokensStack.pop_back();
 auto _1 = POP_V();
 
 // arg_set SEMICOLON arg
-    std::cout << "arg_set SEMICOLON arg in arg_set: add to list and return TokenType::it" << std::endl;
-    as(ListNode, _3)->list.push_back(_1);
-    std::cout << "DONE: arg_set SEMICOLON arg in arg_set: add to list and return TokenType::it" << std::endl;
-    auto __ = _3;
+    as(ListNode, _1)->list.push_back(_3);
+    auto __ = _1;
 
  // Semantic action epilogue.
 PUSH_VR();
@@ -1572,7 +1547,6 @@ void _handler58(yyparse& parser) {
 
 
 // arg_list: empty
-    std::cout << "empty arg_list : make listy and return TokenType::it" << std::endl;
     auto __ = std::make_shared<ListNode>();
 
  // Semantic action epilogue.
@@ -1586,7 +1560,6 @@ auto _1 = POP_V();
 
 // arg_set
     auto __ = _1;
-    std::cout << "arg_set in arg_list: pass thru" << std::endl;
 
  // Semantic action epilogue.
 PUSH_VR();

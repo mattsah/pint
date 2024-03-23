@@ -20,10 +20,8 @@
 code
   : %empty {
     $$ = std::make_shared<ListNode>();
-    std::cout << "empty code : make list" << std::endl;
   }
   | code code_line {
-    std::cout << "code code_line : add to list" << std::endl;
     as(ListNode, $1)->list.push_back($2);
     $$ = $1;
   }
@@ -34,27 +32,22 @@ code_line
   | uses
   | register {
     $$ = $1;
-    std::cout << "code line : passtru" << std::endl;
   }
 ;
 
 body
   : %empty {
     $$ = std::make_shared<ListNode>();
-    std::cout << "empty body: make list" << std::endl;
   }
   | body body_line {
-    std::cout << "body body_line : add to list" << std::endl;
     as(ListNode, $1)->list.push_back($2);
     $$ = $1;
-    std::cout << "DONE: body body_line : add to list" << std::endl;
   }
 ;
 
 body_line
   : "test" SEMICOLON {
     $$ = std::make_shared<Node>();
-    std::cout << "test; in body_line : make node" << std::endl;
   }
 ;
 
@@ -62,7 +55,6 @@ identifier
   : IDENTIFIER {
     // identifier
     $$ = std::make_shared<IdentifierNode>($1);
-    std::cout << "identifier : make node: " << $1 << std::endl;
   }
 ;
 
@@ -146,21 +138,17 @@ uses_list
 register
   : "register" identifier COLON type_form_decl '=' body_line {
     $$ = std::make_shared<Node>();
-    std::cout << "1. register identifier : type_form_decl = body_line : make node and return it" << std::endl;
   }
   | "register" identifier COLON type_func_decl '=' body_line {
     // register: function =
     $$ = std::make_shared<Node>();
-    std::cout << "2. register identifier : type_func_decl = body_line : make node and return it" << std::endl;
   }
   | "register" identifier COLON type_func_decl "begin" body "end" {
     // register: function body
     $$ = std::make_shared<Node>();
-    std::cout << "3. register identifier : type_func_decl begin body end : make node and return it" << std::endl;
   }
   | "register" identifier COLON type_tmpl_decl "begin" body "end" {
     $$ = std::make_shared<Node>();
-    std::cout << "4. register identifier : type_tmpl_decl begin body end : make node and return it" << std::endl;
   }
 ;
 
@@ -187,12 +175,10 @@ length
 return
   : void {
     // return: void
-    std::cout << "void ret: make node and ret it" << std::endl;
     $$ = std::make_shared<Node>();
   }
   | type {
     // return: type
-    std::cout << "type in ret : make node and ret it" << std::endl;
     $$ = std::make_shared<Node>();
   }
 ;
@@ -247,7 +233,6 @@ type_tmpl_decl
 
 type_func_decl
   : type_func '(' arg_list ')' COLON return {
-    std::cout << "type_func(arg_list):ret in type_func_decl :: make node and return it" << std::endl;
     // type_func_decl
     $$ = std::make_shared<Node>();
   }
@@ -262,10 +247,8 @@ type_cons_decl
 identifier_list
   : identifier {
     $$ = std::make_shared<ListNode>($1);
-    std::cout << "identifier: make list and return it" << std::endl;
   }
   | identifier_list ',' identifier {
-    std::cout << "identifier_list ',' identifier: add to list and return it" << std::endl;
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
@@ -274,39 +257,32 @@ identifier_list
 arg
   : identifier_list {
     $$ = $1;
-    std::cout << "identifier_list : pass thru " << std::endl;
   }
   | identifier_list COLON type {
     $$ = $1;
-    std::cout << "identifier_list COLON type in arg : pass thru" << std::endl;
   }
 ;
 
 arg_set
   : arg {
     // arg
-    std::cout << "single arg in arg_set (make a list)" << std::endl;
     $$ = std::make_shared<ListNode>($1);
   }
   | arg_set SEMICOLON arg {
     // arg_set SEMICOLON arg
-    std::cout << "arg_set SEMICOLON arg in arg_set: add to list and return it" << std::endl;
-    as(ListNode, $3)->list.push_back($1);
-    std::cout << "DONE: arg_set SEMICOLON arg in arg_set: add to list and return it" << std::endl;
-    $$ = $3;
+    as(ListNode, $1)->list.push_back($3);
+    $$ = $1;
   }
 ;
 
 arg_list
   : %empty {
     // arg_list: empty
-    std::cout << "empty arg_list : make listy and return it" << std::endl;
     $$ = std::make_shared<ListNode>();
   }
   | arg_set {
     // arg_set
     $$ = $1;
-    std::cout << "arg_set in arg_list: pass thru" << std::endl;
   }
 ;
 
