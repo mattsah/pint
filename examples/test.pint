@@ -1,7 +1,7 @@
 {
 	Declare the unit
 }
-unit mainUnit;
+unit main;
 
 {
 	Import examples
