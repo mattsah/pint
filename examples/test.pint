@@ -27,7 +27,7 @@ uses
 	)
 ;
 
-register main: function(argc: integer; argv: string[]): void
+register main: function(argc: integer; argv: string[]): integer
 begin
   test;
 end
