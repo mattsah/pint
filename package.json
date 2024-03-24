@@ -3,6 +3,6 @@
     "syntax-cli": "^0.1.27"
   },
   "scripts": {
-    "prepare": "node_modules/.bin/syntax-cli -l pint.cpp.lex -g pint.cpp.bnf -m lalr1 -o src/parser.h"
+    "prepare": "node_modules/.bin/syntax-cli --debug -l pint.cpp.lex -g pint.cpp.bnf -m lalr1 -o src/parser.h"
   }
 }

@@ -3,15 +3,21 @@
 
   using namespace pint;
   using Value = std::shared_ptr<Node>;
+
+  
+  #define debug(msg) std::cout <<  std::string(2 * (parser.valuesStack.size() - 1), ' ') << msg << std::endl;
+  // #define debug(msg)
 %}
 
 
+%token TYPE_BASE
+%token TYPE_FORM
+%token TYPE_TMPL
+%token STRING
+%token BOOLEAN
 %token REAL
 %token INTEGER
-%token BOOLEAN
-%token STRING
 %token IDENTIFIER
-%token COLON
 %token SEMICOLON
 %token SEPARATOR
 
@@ -29,23 +35,26 @@ code
 
 code_line
   : unit {
+    debug("code_line: unit" << std::endl);
     $$ = $1;
   }
   | uses {
+    debug("code_line: uses" << std::endl);
     $$ = $1;
   }
   | register {
+    debug("code_line: register" << std::endl);
     $$ = $1;
   }
 ;
 
 body
   : %empty {
-    std::cout << "body: empty" << std::endl;
+    debug("body: empty");
     $$ = std::make_shared<ListNode>();
   }
   | body body_line {
-    std::cout << "body: body body_line" << std::endl;
+    debug("body: body body_line");
     as(ListNode, $1)->list.push_back($2);
     $$ = $1;
   }
@@ -53,30 +62,34 @@ body
 
 body_line
   : "test" SEMICOLON {
-    std::cout << "body_line: test;" << std::endl;
+    debug("body_line: test;");
     $$ = std::make_shared<Node>();
   }
 ;
 
 identifier
   : IDENTIFIER {
-    std::cout << "identifier: IDENTIFIER(" << $1 << ")" << std::endl;
+    debug("identifier: IDENTIFIER(" + $1 + ")");
     $$ = std::make_shared<IdentifierNode>($1);
   }
 ;
 
 path_as
   : unit_path {
+    debug("path_as: unit_path");
     $$ = std::make_shared<PathAsNode>(as(ListNode, $1));
   }
   | unit_path '.' identifier {
+    debug("path_as: unit_path.identifier");
     $$ = std::make_shared<PathAsNode>(as(ListNode, $1), as(IdentifierNode, $3));
   }
   | path_as "as" identifier {
+    debug("path_as: path_as as identifier");
     as(PathAsNode, $1)->setAlias(as(IdentifierNode, $3));
     $$ = $1;
   }
   | unit_path '(' identifier_as_list ')' {
+    debug("path_as: unit_path( identifier_as_list )");
     $$ = std::make_shared<Node>();
   } 
 ;
@@ -102,12 +115,14 @@ identifier_as_list
 
 unit
   : "unit" unit_path SEMICOLON {
+    debug("unit: unit unit_path SEMICOLON");
     $$ = std::make_shared<UnitNode>(as(ListNode, $2));
   }
 ;
 
 unit_path
   : identifier {
+    debug("unit_path: identifier");
     $$ = std::make_shared<ListNode>($1);
   }
   | unit_path SEPARATOR identifier {
@@ -143,18 +158,18 @@ uses_list
 ;
 
 register
-  : "register" identifier COLON type_form_decl '=' body_line {
+  : "register" identifier ':' type_form_decl '=' body_line {
     $$ = std::make_shared<Node>();
   }
-  | "register" identifier COLON type_func_decl '=' body_line {
+  | "register" identifier ':' type_func_decl '=' body_line {
     // register: function =
     $$ = std::make_shared<Node>();
   }
-  | "register" identifier COLON type_func_decl "begin" body "end" {
-    std::cout << "register: register identifier: type_func_decl begin body end" << std::endl;
+  | "register" identifier ':' type_func_decl "begin" body "end" {
+    debug("register: register identifier: type_func_decl begin body end");
     $$ = std::make_shared<Node>();
   }
-  | "register" identifier COLON type_tmpl_decl "begin" body "end" {
+  | "register" identifier ':' type_tmpl_decl "begin" body "end" {
     $$ = std::make_shared<Node>();
   }
 ;
@@ -192,21 +207,22 @@ return
 
 type
   : type_base {
-    std::cout << "type: type_base" << std::endl;
+    debug("type: type_base");
     $$ = std::make_shared<Node>();
   }
   | identifier {
-    std::cout << "type: identifier" << std::endl;
+    debug("type: identifier");
     $$ = std::make_shared<Node>();
   }
   | type '[' length ']' {
-    std::cout << "type: type[length]" << std::endl;
+    debug("type: type[length]");
     $$ = $1;
   }
 ;
 
 literal
   : REAL | INTEGER | BOOLEAN | STRING {
+    debug("literal: " + $1);
     $$ = std::make_shared<Node>();
   }
 ;
@@ -236,25 +252,25 @@ type_tmpl_decl
 ;
 
 type_func_decl
-  : type_func '(' arg_list ')' COLON return {
-    std::cout << "type_func_decl: type_func(arg_list): return" << std::endl;
+  : type_func '(' arg_list ')' ':' return {
+    debug("type_func_decl: type_func(arg_list): return");
     $$ = std::make_shared<Node>();
   }
 ;
 
 type_cons_decl
-  : type_cons '(' arg_list ')' COLON void {
+  : type_cons '(' arg_list ')' ':' void {
     $$ = std::make_shared<Node>();
   }
 ;
 
 identifier_list
   : identifier {
-    std::cout << "identifier_list: identifier" << std::endl;
+    debug("identifier_list: identifier");
     $$ = std::make_shared<ListNode>($1);
   }
   | identifier_list ',' identifier {
-    std::cout << "identifier_list: identiifer_list, identifier" << std::endl;
+    debug("identifier_list: identiifer_list, identifier");
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
@@ -262,91 +278,74 @@ identifier_list
 
 arg
   : identifier_list {
-    std::cout << "arg: identifier_list" << std::endl;
+    debug("arg: identifier_list");
     $$ = std::make_shared<Node>();
   }
-  | arg COLON type {
-    std::cout << "arg: identifier_list: type" << std::endl;
+  | arg ':' type {
+    debug("arg: identifier_list: type");
     $$ = $1;
   }
 ;
 
 arg_list
   : %empty {
-    std::cout << "arg_list: empty" << std::endl;
+    debug("arg_list: empty");
     $$ = std::make_shared<ListNode>();
   }
   | arg_list arg {
-    std::cout << "arg_list: arg_list arg" << std::endl;
+    debug("arg_list: arg_list arg");
     as(ListNode, $1)->list.push_back($2);
     $$ = $1;
   }
   | arg_list SEMICOLON arg {
-    std::cout << "arg_list: arg_list SEMICOLON arg" << std::endl;
+    debug("arg_list: arg_list SEMICOLON arg");
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
 ;
 
-void
-  : "void" {
-    // void
-    $$ = std::make_shared<Node>();
-  }
-;
-
 type_base
-  : "integer" {
-    std::cout << "type_base: " << $1 << std::endl;
-    $$ = std::make_shared<Node>();
-  }
-  | "cardinal" {
-    std::cout << "type_base: " << $1 << std::endl;
-    $$ = std::make_shared<Node>();
-  }
-  | "real" {
-    std::cout << "type_base: " << $1 << std::endl;
-    $$ = std::make_shared<Node>();
-  }
-  | "char" {
-    std::cout << "type_base: " << $1 << std::endl;
-    $$ = std::make_shared<Node>();
-  }
-  | "string" {
-    std::cout << "type_base: " << $1 << std::endl;
-    $$ = std::make_shared<Node>();
-  }
-  | "boolean" {
-    std::cout << "type_base: " << $1 << std::endl;
+  : TYPE_BASE {
+    debug("type_base: " + $1);
     $$ = std::make_shared<Node>();
   }
   | type_base '(' size ')' {
-    std::cout << "type_base: type_base(size)" << std::endl;
+    debug("type_base: type_base(size)");
     $$ = $1
   }
 ;
 
 type_form
-  : "label" | "type" | "record" {
+  : TYPE_FORM {
+    debug("type_form: " + $1);
     $$ = std::make_shared<Node>();
   }
 ;
 
 type_tmpl
-  : "interface" | "implementation" | "class" {
+  : TYPE_TMPL {
+    debug("type_tmpl: " + $1);
     $$ = std::make_shared<Node>();
   }
 ;
 
 type_func
   : "function" {
-    std::cout << "type_func: function" << std::endl;
+    debug("type_func: function");
     $$ = std::make_shared<Node>();
   }
 ;
 
 type_cons
   : "constructor" {
+    debug("type_cons: constructor");
+    $$ = std::make_shared<Node>();
+  }
+;
+
+void
+  : "void" {
+    debug("void: void");
     $$ = std::make_shared<Node>();
   }
 ;
