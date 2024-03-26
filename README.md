@@ -6,6 +6,19 @@ PINT is neither compiled, nor interpreted, because it's not real **yet**.  Howev
 
 ## Basic Usage
 
+### Hello World
+
+```pascal
+unit main;
+
+uses io;
+
+register main: function(): void
+begin
+	io.writeLn('Hello, World!');
+end
+```
+
 ### Declaring Variables
 
 Variables can be declared separately or declared during assignment.  The universal declaration format is the following.
@@ -263,52 +276,67 @@ until
 
 ### Units
 
-All code must belong to a unit, you declare the unit for the code as follows:
+Units are effectively the namespaces of your code.  All code must belong to a unit, you declare the unit for the code as follows:
 
 ```pascal
 unit app;
 ```
 
-You can have a unit inside a unit:
+You can have a sub-units by separating the members of the unit path with a `\` character:
 
 ```pascal
 unit app\utils;
 ```
 
-You can import other units:
+### Uses
+
+To "import" or use code in another unit from the currently declared unit/sub-unit, you would use the `uses` keyword:
 
 ```pascal
 uses io;
 ```
 
-You can import only specific register types from a unit:
+> NOTE: The `uses` keyword operates as an alias.  Modules registered inside a unit is not actually "imported" or linked until it is used.
+
+To use a registered module, you can separate the unit path from the module identifier with a `.` character:
 
 ```pascal
 uses io.writeLn;
 ```
 
-You can alias:
+You can alias the units and or modules you're using with the `as` keyword.
 
 ```pascal
 uses io.writeLn as printLn;
 ```
 
-You can combine all the things:
+If you want to import multiple individual modules from the same unit path, you can use `()` syntax such as:
+
+```pascal
+uses io(writeLn, readLn);
+```
+
+You can combine all of these into a single `uses` statement:
 
 ```pascal
 uses
-	io,
-	app.die,
-	app\utils.rot13 as encrypt
+	io(
+		readLn,
+		writeLn as printLn
+	),
+	crono.time,
+	crypt\algos.rot13 as encrypt
 ;
 ```
 
-Once you're in a unit you can register identifiers at the unit level.  Identifiers can be any valid type, however, they are all constants.  The shortest possible program in PINT looks like this:
+### Register Modules
+
+Once a unit is declared, you can begin registering modules (functions, types, etc) within that unit.  The shorted possible PINT program would look like the following:
 
 ```pascal
 unit main;
 
-register main: function() = 0;
+register main: function() := 0;
 ```
 
 ### Functions
@@ -333,6 +361,13 @@ begin
 		return = 0;
 
 	cleanup();
+end
+
+register cleanup: function(): void
+begin
+	{
+		Do cleanup work here.
+	}
 end
 ```
 
@@ -432,7 +467,7 @@ Level\INFO
 
 ### Types
 
-You can define custom types:
+You can define custom types which are a union of multiple types using the `type` form.
 
 ```pascal
 unit ContextLogger;
@@ -446,7 +481,9 @@ register Context: type = (
 Then use them:
 
 ```pascal
-unit ContextLogger.Context;
+unit app;
+
+uses ContextLogger.Context;
 
 var context1: Context = 1;
 var context2: Context = (id := id);
@@ -454,10 +491,12 @@ var context2: Context = (id := id);
 
 ### Records
 
-Records are basically structs.  They have a number of properties with predefined types, but can also define default values.
+Records are basically structs.  They're like objects, but their properties are declared in advance and can have default values assigned at the time of instantiation.  In the example below, the `timestamp` would reflect the return value of `time()` at the time an `Entry` record is instantiated (not when declared).
 
 ```pascal
 unit Logger;
+
+uses crono.time;
 
 register Entry: record = (
 	text: string,
@@ -613,7 +652,7 @@ register EntityId: type(): (
 	object
 );
 
-register Repository<T of Entity>: implementation()
+register Repository: implementation<T of Entity>()
 begin
 	protected:
 		const manager: Manager;
