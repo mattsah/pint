@@ -336,7 +336,7 @@ Once a unit is declared, you can begin registering modules (functions, types, et
 ```pascal
 unit main;
 
-register main: function() := 0;
+register main: function() = 0;
 ```
 
 ### Functions
@@ -461,8 +461,8 @@ register Level: label(Logger\Level) = (
 
 Labels are accessed using a backslash notation:
 
-```
-Level\INFO
+```pascal
+Level#INFO
 ```
 
 ### Types
