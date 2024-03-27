@@ -58,22 +58,26 @@ namespace pint {
 			}
 	};
 
-	class PathAsNode: public Node {
+	class ImportNode: public Node {
 		public:
-			std::shared_ptr<ListNode> path;
-			std::shared_ptr<IdentifierNode> member;
+			std::shared_ptr<UnitNode> unit;
+			std::shared_ptr<IdentifierNode> module;
 			std::shared_ptr<IdentifierNode> alias;
 
-			PathAsNode(std::shared_ptr<ListNode> path) {
-				this->path  = path;
-				this->alias = as(IdentifierNode, path->list.back());
+			ImportNode(std::shared_ptr<UnitNode> unit) {
+				this->unit  = unit;
+				this->alias = as(IdentifierNode, unit->path->list.back());
 			}
 
-			PathAsNode(std::shared_ptr<ListNode> path, std::shared_ptr<IdentifierNode> member) {
-				this->path   = path;
-				this->member = member;
-				this->alias  = member;
+			ImportNode(std::shared_ptr<UnitNode> unit, std::shared_ptr<IdentifierNode> module) {
+				this->unit   = unit;
+				this->module = module;
+				this->alias  = module;
 			}
+
+      void setModule(std::shared_ptr<IdentifierNode> module) {
+        this->module = module;
+      }
 
 			void setAlias(std::shared_ptr<IdentifierNode> alias) {
 				this->alias = alias;

@@ -1,34 +1,20 @@
-{
-	Declare the unit
-}
 unit main;
 
-{
-	Import examples
-}
-
-{ Single line }
-uses io;
-
-{ Multi line }
 uses
-	{ Entire unit }
-	math,
-	{ Unit as alias }
-	regex as rx,
-	{ Individual identifier }
-	app\models.Person,
-	{ Individual identifier as alias }
-	app\models.PersonRepository as People,
-	{ Multiple identifiers optionally alias }
-	app\models(
-		Car,
-		CarRepository as Cars
+	io,
+	crypt\utils.rot13 as encrypt,
+	crono.time,
+	math(
+		average as avg,
+		floor,
+		ceil
 	)
 ;
 
+{
+	Testing	
+}
 register main: function(argc: integer; argv: string[]): integer
 begin
-  io.writeLn('Hello %s!'.format('World'));
+	io.writeLn('Hello %s!'.format('World').lower()[1].upper()[1]);
 end
-
