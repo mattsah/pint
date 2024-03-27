@@ -2,13 +2,8 @@ unit main;
 
 uses
 	io,
-	crypt\utils.rot13 as encrypt,
-	crono.time,
-	math(
-		average as avg,
-		floor,
-		ceil
-	)
+	crono.DateTime,
+	crypt\rot13(encode as encrypt)
 ;
 
 {
@@ -16,5 +11,7 @@ uses
 }
 register main: function(argc: integer; argv: string[]): integer
 begin
-	io.writeLn('Hello %s!'.format('World').lower()[1].upper()[1]);
+	var now := new DateTime();
+
+	io.writeLn(encrypt('Super secret message, encoded on: %s'.format(now.format('m/d/Y'))));
 end

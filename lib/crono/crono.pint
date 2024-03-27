@@ -1,0 +1,6 @@
+unit crono;
+
+{
+	The default timezone
+}
+var defaultTimeZone := new TimeZone('UTC');

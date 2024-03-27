@@ -1,0 +1,25 @@
+unit crypt\rot13;
+
+{
+	Encode a single character in rot13
+}
+register encode: function(c: char): char
+begin
+	const shift: function(c, basis) = (((c - basis) + 13) % 26) + basis;
+
+	if 'a' <= c and c <= 'z' do
+		return shift(c, 'a');
+	else if 'A' <= c and c <= 'Z' do
+		return shift(c, 'A');
+	else do
+		return c;
+end
+
+{
+	Encode a string in rot13
+}
+register encode: function(msg: string): string
+begin
+	return msg[encode];
+end
+

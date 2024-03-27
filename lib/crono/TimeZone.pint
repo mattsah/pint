@@ -1,0 +1,13 @@
+unit crono;
+
+register TimeZone: class()
+begin
+	public:
+		{
+			Construct a new DateTime with TimeZone
+		}
+		const constructor(where: string)
+		begin
+
+		end
+end

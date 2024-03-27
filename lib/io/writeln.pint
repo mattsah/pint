@@ -1,6 +1,0 @@
-unit io;
-
-const writeln: function(line: string)
-	begin
-
-	end;

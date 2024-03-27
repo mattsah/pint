@@ -1,0 +1,23 @@
+unit io;
+
+{
+	Write the parts of the line out to a selected filedescriptor
+}
+register writeLn: function(fd: cardinal, ...parts: string): ?string
+begin
+		for var parts in parts do
+				return = return + part;
+
+		return += io.EOL;
+
+		io.write(fd, return);
+		io.close(fd);
+end
+
+{
+	Write the parts of the line out to standard output
+}
+register writeLn: function(...parts: string): ?string
+begin
+	return writeLn(io.open(io.STDOUT));
+end
