@@ -29,6 +29,6 @@ uses
 
 register main: function(argc: integer; argv: string[]): integer
 begin
-  test;
+  io.writeLn('Hello %s!'.format('World'));
 end
 

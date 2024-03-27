@@ -61,8 +61,8 @@ body
 ;
 
 body_line
-  : "test" SEMICOLON {
-    debug("body_line: test;");
+  : expr SEMICOLON {
+    debug("body_line: expr;");
     $$ = std::make_shared<Node>();
   }
 ;
@@ -126,6 +126,7 @@ unit_path
     $$ = std::make_shared<ListNode>($1);
   }
   | unit_path SEPARATOR identifier {
+    debug("unit_path: unit_path\\identifier");
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
@@ -221,7 +222,19 @@ type
 ;
 
 literal
-  : REAL | INTEGER | BOOLEAN | STRING {
+  : REAL {
+    debug("literal: " + $1);
+    $$ = std::make_shared<Node>();
+  }
+  | INTEGER {
+    debug("literal: " + $1);
+    $$ = std::make_shared<Node>();
+  }
+  | BOOLEAN {
+    debug("literal: " + $1);
+    $$ = std::make_shared<Node>();
+  }
+  | STRING {
     debug("literal: " + $1);
     $$ = std::make_shared<Node>();
   }
@@ -287,19 +300,25 @@ arg
   }
 ;
 
+arg_set
+  : arg {
+    debug("arg_set: arg");
+    $$ = std::make_shared<ListNode>($1);
+  }
+  | arg_set SEMICOLON arg {
+    debug("arg_set: arg_set SEMICOLON arg");
+    as(ListNode, $1)->list.push_back($3);
+    $$ = $1;
+  }
+;
+
 arg_list
   : %empty {
     debug("arg_list: empty");
     $$ = std::make_shared<ListNode>();
   }
-  | arg_list arg {
-    debug("arg_list: arg_list arg");
-    as(ListNode, $1)->list.push_back($2);
-    $$ = $1;
-  }
-  | arg_list SEMICOLON arg {
-    debug("arg_list: arg_list SEMICOLON arg");
-    as(ListNode, $1)->list.push_back($3);
+  | arg_set {
+    debug("arg_list: arg_set");
     $$ = $1;
   }
 ;
@@ -348,4 +367,52 @@ void
     debug("void: void");
     $$ = std::make_shared<Node>();
   }
+;
+
+
+/**
+ * Expressions
+ */
+
+expr
+  : literal {
+    $$ = std::make_shared<Node>();
+  }
+  | tail_expr {
+    $$ = std::make_shared<Node>();
+  }
+  | unit_path '.' tail_expr {
+    $$ = std::make_shared<Node>();
+  }
+;
+
+tail_expr
+  : identifier {
+    $$ = std::make_shared<Node>();
+  }
+  | tail_expr '(' param_list ')' {
+    $$ = std::make_shared<Node>();
+  }
+  | tail_expr '.' tail_expr {
+    $$ = std::make_shared<Node>();
+  }
+;
+
+param_list
+  : %empty {
+    $$ = std::make_shared<ListNode>();
+  }
+  | param_set {
+    $$ = $1;
+  }
+;
+
+param_set 
+  : expr {
+    $$ = std::make_shared<ListNode>($1);
+  }
+  | param_set ',' expr {
+    as(ListNode, $1)->list.push_back($3);
+    $$ = $1;
+  } 
 ;
