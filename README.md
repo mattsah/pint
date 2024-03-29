@@ -325,13 +325,13 @@ uses
 		writeLn as printLn
 	),
 	crono.time,
-	crypt\algos.rot13 as encrypt
+	crypt\rot13.encode as encrypt
 ;
 ```
 
 ### Register Modules
 
-Once a unit is declared, you can begin registering modules (functions, types, etc) within that unit.  The shorted possible PINT program would look like the following:
+Once a unit is declared, you can begin registering modules (functions, types, etc) within that unit.  The shorted possible PINT program would look like the following:/
 
 ```pascal
 unit main;
@@ -433,38 +433,6 @@ var key := 'left';
 return context[key];
 ```
 
-### Labels
-
-Labels are PINT's form of enumerators.
-
-```pascal
-unit Logger;
-
-register Level: label = (
-	INFO,
-	WARNING,
-	ERROR
-);
-```
-
-If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend labels:
-
-```pascal
-unit ContextLogger;
-
-uses Logger;
-
-register Level: label(Logger\Level) = (
-	CONTEXT
-);
-```
-
-Labels are accessed using a backslash notation:
-
-```pascal
-Level#INFO
-```
-
 ### Types
 
 You can define custom types which are a union of multiple types using the `type` form.
@@ -487,6 +455,38 @@ uses ContextLogger.Context;
 
 var context1: Context = 1;
 var context2: Context = (id := id);
+```
+
+### Labels
+
+Labels are PINT's form of enumerators.
+
+```pascal
+unit Logger;
+
+register Level: label = (
+	INFO,
+	WARNING,
+	ERROR
+);
+```
+
+If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend labels:
+
+```pascal
+unit ContextLogger;
+
+uses Logger;
+
+register Level: label(Logger.Level) = (
+	CONTEXT
+);
+```
+
+Labels are accessed using a backslash notation:
+
+```pascal
+Level#INFO
 ```
 
 ### Records
@@ -512,7 +512,7 @@ unit ContextLogger;
 
 uses Logger;
 
-register Entry: record(Logger\Entry) = (
+register Entry: record(Logger.Entry) = (
 	context: Context
 );
 ```
@@ -524,7 +524,7 @@ uses ContextLogger(Entry, Level);
 
 var entry := new Entry(
 	text    = 'Cannot find record of type %s'.format(User),
-	level   = Level\WARNING,
+	level   = Level#WARNING,
 	context = (
 		id := id
 	)
@@ -542,7 +542,7 @@ unit Logger;
 
 register Log: interface
 begin
-	const log: function(entry: Entry): ?self;
+	set log: function(entry: Entry): ?self;
 end
 ```
 
@@ -553,9 +553,9 @@ unit ContextLogger;
 
 uses Logger;
 
-register Log: interface(Logger\Log)
+register Log: interface(Logger.Log)
 begin
-	const log: function(entry: Entry): ?self;
+	set log: function(entry: Entry): ?self;
 end
 ```
 
@@ -570,12 +570,12 @@ uses io, crono, json, ContextLogger(Log, Entry);
 
 register FileLogger(Log): implementation
 begin
-	const log: function(entry: Entry): ?Log
+	set log: function(entry: Entry): ?Log
 	begin
 		var today := new crono.Date('today');
 		var fd    := io.openFile(
 			'storage/logs/%s.log'.format(today.format('Y-m-d')),
-			io.Mode\APPEND
+	        io.Mode#APPEND
 		);
 		
 		if not fd then
@@ -609,7 +609,7 @@ use crono, ContextLogger(Entry, Level);
 register Application: class(FileLogger)
 begin
 	public:
-		const boot: function(): self
+		set boot: function(): self
 		begin
 			var start = crono.time();
 			
@@ -617,7 +617,7 @@ begin
 			
 			this.log(new Entry(
 				text    = 'Finished booting',
-				level   = Level\CONTEXT,
+				level   = Level#CONTEXT,
 				context = (
 					time := crono.time() - start
 				)
@@ -636,7 +636,7 @@ unit DI;
 register Injector: class()
 begin
 	public:
-		const get: function(class: class<T>): T
+		set get: function(class: class<T>): T
 		begin
 			return new T();
 		end
@@ -655,15 +655,15 @@ register EntityId: type(): (
 register Repository: implementation<T of Entity>()
 begin
 	protected:
-		const manager: Manager;
+		set manager: Manager;
 
 	public:
-		const constructor(manager: Manager): void
+		set constructor(@manager: Manager): void
 		begin
 			this.manager = manager;
 		end
 		
-		const find: function(id: EntityId): ?T
+		set find: function(id: EntityId): ?T
 		begin
 			{find the entity and return it or return nil if not found}
 		end
@@ -672,15 +672,15 @@ end
 register Manager: class()
 begin
 	private:
-		const repositories: object;
+		set repositories: object;
 
 	public:
-		const constructor()
+		set constructor()
 		begin
 			this.repositories = new object();
 		end
 	
-		const getRepository: function(class: class<T of Repository>): T
+		set getRepository: function(class: class<T of Repository>): T
 		begin
 			if not set this.repositories[class] begin
 				this.repositories[class] := new T(this);
