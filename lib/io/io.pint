@@ -3,12 +3,12 @@ unit io;
 {
 	Useful characters
 }
-const EOS := 0:char(8);
-const EOL := 10:char(8);
+set EOS := 0:char(8);
+set EOL := 10:char(8);
 
 {
 	Standard file descriptors
 }
-const STDIN  := 0:cardinal;
-const STDOUT := 1:cardinal;
-const STDERR := 2:cardinal;
+set STDIN  := 0:cardinal;
+set STDOUT := 1:cardinal;
+set STDERR := 2:cardinal;

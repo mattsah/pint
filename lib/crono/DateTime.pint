@@ -4,14 +4,9 @@ register DateTime: class()
 begin
 	public:
 		{
-			The default TimeZone
-		}
-		class var defaultTimeZone: DateTimeZone;
-
-		{
 			Construct a new DateTime with TimeZone
 		}
-		const constructor(when: string = 'now'; timezone: TimeZone = defaultTimeZone)
+		set constructor(when: string = 'now'; timezone: TimeZone = defaultTimeZone)
 		begin
 
 		end

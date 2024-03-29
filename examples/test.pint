@@ -6,12 +6,39 @@ uses
 	crypt\rot13(encode as encrypt)
 ;
 
+
+register ExType: type = (
+	string,
+	integer
+);
+
+register ExLabel: label = (
+	INFO,
+	WARNING,
+	ERROR,
+	CRITICAL
+);
+
+register ExRecord: record = (
+	msg: string,
+	created: integer default crono.time()
+);
+
+
 {
 	Testing	
 }
 register main: function(argc: integer; argv: string[]): integer
 begin
-	var now := new DateTime();
+	var	a = 1;
+	var b: = 1;
+	var c: () = 1;
+	var d: (8) = 1;
+	var e: integer = 1;
+	var f: integer() = 1;
+	var g: integer(8) = (($foo = 1, bar = 2).$foo);
+	var h: integer[] = [];
+	var i: integer[5] = [1, 2, 3, 4, 5];
 
-	io.writeLn(encrypt('Super secret message, encoded on: %s'.format(now.format('m/d/Y'))));
+	var @test = foo;
 end

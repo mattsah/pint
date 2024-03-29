@@ -5,7 +5,7 @@ unit crypt\rot13;
 }
 register encode: function(c: char): char
 begin
-	const shift: function(c, basis) = (((c - basis) + 13) % 26) + basis;
+	set shift: function(c, basis) = (((c - basis) + 13) % 26) + basis;
 
 	if 'a' <= c and c <= 'z' do
 		return shift(c, 'a');

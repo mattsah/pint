@@ -6,7 +6,7 @@ begin
 		{
 			Construct a new DateTime with TimeZone
 		}
-		const constructor(where: string)
+		set constructor(where: string)
 		begin
 
 		end
