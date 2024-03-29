@@ -6,6 +6,8 @@ uses
 	crypt\rot13(encode as encrypt)
 ;
 
+var EXVAR = 1;
+set EXSET = 2;
 
 register ExType: type = (
 	string,
@@ -24,21 +26,33 @@ register ExRecord: record = (
 	created: integer default crono.time()
 );
 
-
 {
-	Testing	
+	Testing
 }
 register main: function(argc: integer; argv: string[]): integer
 begin
-	var	a = 1;
-	var b: = 1;
-	var c: () = 1;
-	var d: (8) = 1;
-	var e: integer = 1;
-	var f: integer() = 1;
-	var g: integer(8) = (($foo = 1, bar = 2).$foo);
-	var h: integer[] = [];
-	var i: integer[5] = [1, 2, 3, 4, 5];
 
-	var @test = foo;
+	// Various declarations
+
+	var a;                 // implicit dynamic type, implicit dynamic size
+	var b:;                // implicit fixed type, implicit dynamic size
+	var c: ();             // implicit fixed type, implicit fixed size
+	var d: (8);            // implicit fixed type, explicit fixed size
+	var e: integer;        // explicit fixed type, implicit dynamic size
+	var f: integer();      // explicit fixed type, implicit fixed size
+	var g: integer(8);     // explicit fixed type, explicit fixed size
+	var h: integer(8)[];
+	var i: integer()[];
+	var j: integer[];
+	var k: (8)[];
+	var l: ()[];
+	var m: [];
+end
+
+{
+	[param] string @msg A reference to a string
+}
+register foo: function(@msg: string): void
+begin
+	io.writeLn(msg);
 end

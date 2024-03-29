@@ -4,8 +4,8 @@
   using namespace pint;
   using Value = std::shared_ptr<Node>;
 
-  
-  #define debug(msg) std::cout <<  std::string(2 * (parser.valuesStack.size() - 1), ' ') << msg << std::endl;
+
+  #define debug(msg) std::cout << std::string(2 * (parser.valuesStack.size()), ' ') << msg << std::endl;
   // #define debug(msg)
 %}
 
@@ -23,54 +23,146 @@
 
 %%
 
-code
+program
   : %empty {
     $$ = std::make_shared<ListNode>();
   }
-  | code code_line {
-    as(ListNode, $1)->list.push_back($2);
-    $$ = $1;
+  | unit_list {
+		$$ = $1;
   }
 ;
 
-code_line
-  : unit {
-    debug("code_line: unit" << std::endl);
-    $$ = $1;
+unit_list
+  : unit_line {
+		$$ = std::make_shared<ListNode>($1);
   }
-  | uses {
-    debug("code_line: uses" << std::endl);
-    $$ = $1;
-  }
-  | register {
-    debug("code_line: register" << std::endl);
-    $$ = $1;
+  | unit_list unit_line {
+		as(ListNode, $1)->list.push_back($2);
+		$$ = $1;
   }
 ;
 
-body
-  : %empty {
-    debug("body: empty");
-    $$ = std::make_shared<ListNode>();
-  }
-  | body body_line {
-    debug("body: body body_line");
-    as(ListNode, $1)->list.push_back($2);
-    $$ = $1;
+unit_line
+  : unit_stmt {
+		$$ = std::make_shared<Node>();
+	}
+  | uses_stmt {
+		$$ = std::make_shared<Node>();
+	}
+  | register_stmt {
+		$$ = std::make_shared<Node>();
+	}
+  | var_decl_stmt {
+		$$ = std::make_shared<Node>();
+	}
+  | set_decl_stmt {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+block
+	: %empty {
+		$$ = std::make_shared<Node>();
+	}
+	| "begin" block_list "end" {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+block_list
+	: block_line {
+		$$ = std::make_shared<ListNode>($1);
+	}
+	| block_list block_line {
+		as(ListNode, $1)->list.push_back($2);
+		$$ = $1;
+	}
+;
+
+block_line
+  : var_decl_stmt {
+		$$ = std::make_shared<Node>();
+	}
+	| set_decl_stmt {
+		$$ = std::make_shared<Node>();
+	}
+	| call_stmt {
+		$$ = std::make_shared<Node>();
+	}
+	| assign_stmt {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+var_decl_stmt
+	: var_decl SEMICOLON {
+		$$ = $1;
+	}
+;
+
+set_decl_stmt
+	: set_decl SEMICOLON {
+		$$ = $1;
+	}
+;
+
+assign_stmt
+	: assign SEMICOLON {
+		$$ = $1;
+	}
+;
+
+call_stmt
+	: call SEMICOLON {
+		$$ = $1;
+	}
+;
+
+unit_stmt
+  : "unit" path SEMICOLON {
+    debug("unit: unit identifier;");
+    $$ = std::make_shared<UnitNode>(as(ListNode, $2));
   }
 ;
 
-body_line
-  : var_decl SEMICOLON {
+uses_stmt
+  : "uses" import_list SEMICOLON {
+    debug("uses: import_list;")
+    $$ = std::make_shared<UsesNode>(as(ListNode, $2));
+  }
+;
+
+register_stmt
+  : "register" identifier ':' "type" type_form_decl '=' '(' type_list ')' SEMICOLON {
     $$ = std::make_shared<Node>();
   }
-  | set_decl SEMICOLON {
+  | "register" identifier ':' "label" type_form_decl '=' '(' label_list ')' SEMICOLON {
     $$ = std::make_shared<Node>();
   }
-  | assign SEMICOLON {
+  | "register" identifier ':' "record" type_form_decl '=' '(' record_list ')' SEMICOLON {
+    $$ = std::make_shared<Node>();
+  }
+  | "register" identifier ':' "function" type_func_decl '=' expr SEMICOLON {
+    $$ = std::make_shared<Node>();
+  }
+  | "register" identifier ':' "function" type_func_decl block {
+    $$ = std::make_shared<Node>();
+  }
+  | "register" identifier ':' "class" type_form_decl block {
+    $$ = std::make_shared<Node>();
+  }
+  | "register" identifier ':' "interface" type_form_decl block {
+    $$ = std::make_shared<Node>();
+  }
+  | "register" identifier ':' "implementation" type_form_decl block {
     $$ = std::make_shared<Node>();
   }
 ;
+
+
+
+
+
 
 literal
   : base_literal {
@@ -141,25 +233,6 @@ symbol_list
   }
 ;
 
-unit
-  : "unit" identifier SEMICOLON {
-    debug("unit: unit identifier;");
-    $$ = std::make_shared<UnitNode>(std::make_shared<ListNode>($2));
-  }
-  | "unit" path SEPARATOR identifier {
-    debug("unit: unit path\\identifier;");
-    as(ListNode, $2)->list.push_back($4);
-    $$ = std::make_shared<UnitNode>(as(ListNode, $2));
-  } 
-;
-
-uses
-  : "uses" import_list SEMICOLON {
-    debug("uses: import_list;")
-    $$ = std::make_shared<UsesNode>(as(ListNode, $2));
-  }
-;
-
 import_list
   : import {
     $$ = std::make_shared<ListNode>($1);
@@ -201,32 +274,6 @@ module
   }
 ;
 
-register
-  : "register" identifier ':' "type" type_form_decl '=' '(' type_list ')' SEMICOLON {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "label" type_form_decl '=' '(' label_list ')' SEMICOLON {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "record" type_form_decl '=' '(' record_list ')' SEMICOLON {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "function" type_func_decl '=' expr SEMICOLON {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "function" type_func_decl "begin" body "end" {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "class" type_form_decl "begin" body "end" {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "interface" type_form_decl "begin" body "end" {
-    $$ = std::make_shared<Node>();
-  }
-  | "register" identifier ':' "implementation" type_form_decl "begin" body "end" {
-    $$ = std::make_shared<Node>();
-  }
-;
 
 
 
@@ -244,7 +291,10 @@ type_form_decl
 ;
 
 type_func_decl
-  : '(' arg_list ')' {
+  : %empty {
+		$$ = std::make_shared<Node>();
+	}
+	| '(' arg_list ')' {
     debug("type_func_decl: type_func(arg_list): return");
     $$ = std::make_shared<Node>();
   }
@@ -357,22 +407,34 @@ type_cons
   }
 ;
 
- expr
+call
+	: mark '(' param_list ')' {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+mark
+	: path {
+		$$ = std::make_shared<Node>();
+	}
+	| mark '[' expr ']' {
+		$$ = std::make_shared<Node>();
+	}
+	| mark '.' identifier {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+expr
   : literal {
     $$ = std::make_shared<Node>();
   }
-  | path {
-    $$ = std::make_shared<Node>();
-  }
-  | expr '[' expr ']' {
-    $$ = std::make_shared<Node>();
-  }
-  | expr '.' identifier {
-    $$ = std::make_shared<Node>();
-  }
-  | expr '.' identifier '(' param_list ')' {
-    $$ = std::make_shared<Node>();
-  }
+	| mark {
+		$$ = std::make_shared<Node>();
+	}
+	| call {
+		$$ = std::make_shared<Node>();
+	}
   | '(' expr ')' {
     $$ = std::make_shared<Node>();
   }
@@ -400,14 +462,14 @@ param_list
   }
 ;
 
-param_set 
+param_set
   : expr {
     $$ = std::make_shared<ListNode>($1);
   }
   | param_set ',' expr {
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
-  } 
+  }
 ;
 
 size
@@ -465,7 +527,7 @@ var_decl
   }
   | "var" '(' arg_set ')' {
     $$ = std::make_shared<Node>();
-  } 
+  }
 ;
 
 set_decl
@@ -478,7 +540,7 @@ set_decl
 ;
 
 assign
-  : symbol '=' expr {
+  : mark '=' expr {
     $$ = std::make_shared<Node>();
   }
 ;
@@ -557,7 +619,7 @@ record_list
     $$ = std::make_shared<Node>();
   }
 ;
-  
+
 array_literal
   : '[' expr_list ']' {
     $$ = std::make_shared<Node>();
