@@ -31,9 +31,9 @@ When a variable is declared, the signature of the declaration says a lot about t
 
 #### Type vs. Size vs. Length
 
-Values have both a type and a size.  This is contrast to other languages where the size is often part of type.  What the size refers to depends on the type, for numbers it refers to its bit-length, for characters and strings it refers to the UTF code unit size.  Sizes should not be thought of as the amount of memory consumed.  Valid sizes are always multiple of 8.
+Values have both a type and a size.  This is contrast to other languages where the size is often part of type.  What the size refers to depends on the type, for numbers it refers to its bit-length, for characters and strings it refers to the UTF code unit size.  Sizes should not be thought of as the amount of memory consumed.
 
-Length only applies to arrays.  The length is the logical length of the thing.  For an array of characters (aka: a string), this would be the length of the string.
+Length only applies to arrays.  The length is the logical length of the thing.  For an array of characters (aka: a string), this would be the length of the string.  Since a UTF-8 or UTF-16 string can have multi-byte characters, the length is not equivalent, still, to the amount of memory consumed.
 
 #### Explicit vs. Implicit
 
@@ -41,7 +41,7 @@ Both the type and size of a variable can be explicitly or implicitly declared.  
 
 #### Fixed vs. Dynamic
 
-Both the type and size of a variable can also be fixed or dynamic.  If a type of a variable is fixed, whether the type was determined explicitly (at declaration) or implicitly (at initialization) it cannot be changed.  A dynamic type, by contrast, means that the type of the variable can change.  The same logic applies to size.
+Both the type, size, and length of a variable can also be fixed or dynamic.  If a type of a variable is fixed, whether the type was determined explicitly (at declaration) or implicitly (at initialization) it cannot be changed.  A dynamic type, by contrast, means that the type of the variable can change.  The same logic applies to size and length.
 
 #### Examples
 
@@ -336,7 +336,7 @@ Once a unit is declared, you can begin registering modules (functions, types, et
 ```pascal
 unit main;
 
-register main: function() = 0;
+register main: function = 0;
 ```
 
 ### Functions
@@ -425,12 +425,12 @@ var context := (
 );
 ```
 
-To access an object property you can use the `.` notation when the identifier is static.  If the identifier needs to be a variable you can use `[]` notation:
+To access an object property you can use the `.` notation when the identifier is static.  If the identifier needs to be a variable you can use `$` character.  The below code would return `context.left`:
 
 ```pascal
 var key := 'left';
 
-return context[key];
+return context.$key;
 ```
 
 ### Types
@@ -483,7 +483,7 @@ register Level: label(Logger.Level) = (
 );
 ```
 
-Labels are accessed using a backslash notation:
+Labels are accessed using a `#` notation:
 
 ```pascal
 Level#INFO
@@ -655,7 +655,7 @@ register EntityId: type(): (
 register Repository: implementation<T of Entity>()
 begin
 	protected:
-		set manager: Manager;
+		set @manager: Manager;
 
 	public:
 		set constructor(@manager: Manager): void
