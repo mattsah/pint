@@ -5,7 +5,7 @@
   using Value = std::shared_ptr<Node>;
 
 
-  #define debug(msg) std::cout << std::string(2 * (parser.valuesStack.size()), ' ') << msg << std::endl;
+  // #define debug(msg) std::cout << std::string(2 * (parser.valuesStack.size()), ' ') << msg << std::endl;
   // #define debug(msg)
 %}
 
@@ -20,6 +20,7 @@
 %token SEPARATOR
 
 %right '='
+%left  '.'
 %left  '+' '-'
 %left  '*' '/'
 
@@ -56,7 +57,7 @@ block
 block_line
   : var_decl_stmt
 	| set_decl_stmt
-	| call_stmt
+	| expr_stmt
 	| assign_stmt
 	| return_stmt
 ;
@@ -79,8 +80,8 @@ assign_stmt
 	}
 ;
 
-call_stmt
-	: call SEMICOLON {
+expr_stmt
+	: expr SEMICOLON {
 		$$ = $1;
 	}
 ;
@@ -205,16 +206,6 @@ symbol_list
   }
 ;
 
-import_list
-  : import {
-    $$ = std::make_shared<ListNode>($1);
-  }
-  | import_list ',' import {
-    as(ListNode, $1)->list.push_back($3);
-    $$ = $1;
-  }
-;
-
 import
   : symbol {
     $$ = std::make_shared<Node>();
@@ -222,16 +213,16 @@ import
   | symbol "as" identifier {
     $$ = std::make_shared<Node>();
   }
-  | path '(' module_list ')' {
+  | path '.' '(' module_list ')' {
     $$ = std::make_shared<Node>();
   }
 ;
 
-module_list
-  : module {
+import_list
+  : import {
     $$ = std::make_shared<ListNode>($1);
   }
-  | module_list ',' module {
+  | import_list ',' import {
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
@@ -246,6 +237,15 @@ module
   }
 ;
 
+module_list
+  : module {
+    $$ = std::make_shared<ListNode>($1);
+  }
+  | module_list ',' module {
+    as(ListNode, $1)->list.push_back($3);
+    $$ = $1;
+  }
+;
 
 form_decl
   : %empty {
@@ -376,10 +376,7 @@ type_list
 ;
 
 mark
-	: path {
-		$$ = std::make_shared<Node>();
-	}
-	| path '.' identifier {
+	: symbol {
 		$$ = std::make_shared<Node>();
 	}
 	| mark '[' expr ']' {
@@ -401,13 +398,13 @@ expr
   : literal {
     $$ = std::make_shared<Node>();
   }
-	| function_literal {
-		$$ = std::make_shared<Node>();
-	}
 	| mark {
 		$$ = std::make_shared<Node>();
 	}
-	| call {
+	| mark '(' params ')' {
+		$$ = std::make_shared<Node>();
+	}
+	| function_literal {
 		$$ = std::make_shared<Node>();
 	}
   | '(' expr ')' {
@@ -438,12 +435,6 @@ expr_list
     as(ListNode, $1)->list.push_back($3);
     $$ = $1;
   }
-;
-
-call
-	: mark '(' params ')' {
-		$$ = std::make_shared<Node>();
-	}
 ;
 
 return

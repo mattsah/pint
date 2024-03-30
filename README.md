@@ -313,14 +313,14 @@ uses io.writeLn as printLn;
 If you want to import multiple individual modules from the same unit path, you can use `()` syntax such as:
 
 ```pascal
-uses io(writeLn, readLn);
+uses io.(writeLn, readLn);
 ```
 
 You can combine all of these into a single `uses` statement:
 
 ```pascal
 uses
-	io(
+	io.(
 		readLn,
 		writeLn as printLn
 	),

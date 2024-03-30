@@ -3,7 +3,7 @@ unit main;
 uses
 	io,
 	crono.DateTime,
-	crypt\rot13(encode as encrypt)
+	crypt\rot13.(encode as encrypt)
 ;
 
 var EXVAR = 1;
@@ -57,6 +57,9 @@ begin
 	io.writeLn(msg);
 
 	return (
-		function() = 'test'
+		function()
+		begin
+
+		end
 	);
 end
