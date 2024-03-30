@@ -1,8 +1,11 @@
 #!/bin/bash
 
-bison pint.cpp.bnf --feature=syntax-only -Wcounterexamples
+bison pint.cpp.bnf --feature=syntax-only -Wcounterexamples -Werror
 
 if [ $? -eq 0 ]; then
-	npm run prepare
-	clang-18 -g -O0 -std=c++23 -o bin/pint src/main.cpp -lstdc++
+	npx syntax-cli -l pint.cpp.lex -g pint.cpp.bnf -m lalr1 -o src/parser.h
+
+	if [ $? -eq 0 ]; then
+		clang-18 -g -O0 -std=c++23 -o bin/pint src/main.cpp -lstdc++
+	fi
 fi

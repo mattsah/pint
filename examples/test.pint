@@ -32,7 +32,9 @@ register ExRecord: record = (
 register main: function(argc: integer; argv: string[]): integer
 begin
 
-	// Various declarations
+	{
+		Various declarations
+	}
 
 	var a;                 // implicit dynamic type, implicit dynamic size
 	var b:;                // implicit fixed type, implicit dynamic size

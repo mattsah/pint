@@ -6,8 +6,8 @@ TMPL_TYPES ("type" | "label" | "record")
 %%
 
 \s+                           %empty
+\/\/.*                        %empty
 \{[^\}]*\}                    %empty
-\/\/.*\n                      %empty
 {BASE_TYPES}                  TYPE_BASE
 (['"])(.*?[^\\])?(\\\\)*(\1)  STRING
 true|false                    BOOLEAN
@@ -16,3 +16,8 @@ true|false                    BOOLEAN
 [a-zA-Z_][a-zA-Z0-9_]*        IDENTIFIER
 [;]                           SEMICOLON
 \\                            SEPARATOR
+\+                            ADD
+\-                            SUB
+\*                            MUL
+\/                            DIV
+

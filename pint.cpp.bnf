@@ -9,7 +9,6 @@
   // #define debug(msg)
 %}
 
-
 %token TYPE_BASE
 %token STRING
 %token BOOLEAN
@@ -20,9 +19,8 @@
 %token SEPARATOR
 
 %right '='
-%left  '.'
-%left  '+' '-'
-%left  '*' '/'
+%left  ADD SUB
+%left  MUL DIV
 
 %%
 
@@ -271,6 +269,7 @@ func_decl
   }
 ;
 
+/*
 cons_decl
 	: %empty {
 		$$ = std::make_shared<Node>();
@@ -282,6 +281,7 @@ cons_decl
     $$ = std::make_shared<Node>();
   }
 ;
+*/
 
 var
   : identifier {
@@ -410,16 +410,16 @@ expr
   | '(' expr ')' {
     $$ = std::make_shared<Node>();
   }
-	| expr '+' expr {
+	| expr ADD expr {
 		$$ = std::make_shared<Node>();
 	}
-	| expr '-' expr {
+	| expr SUB expr {
 		$$ = std::make_shared<Node>();
 	}
-	| expr '*' expr {
+	| expr MUL expr {
 		$$ = std::make_shared<Node>();
 	}
-	| expr '/' expr {
+	| expr DIV expr {
 		$$ = std::make_shared<Node>();
 	}
 ;
