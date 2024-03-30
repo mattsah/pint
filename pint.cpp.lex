@@ -9,12 +9,10 @@ TMPL_TYPES ("type" | "label" | "record")
 \{[^\}]*\}                    %empty
 \/\/.*\n                      %empty
 {BASE_TYPES}                  TYPE_BASE
-{FORM_TYPES}                  TYPE_FORM
-{TMPL_TYPES}                  TYPE_TMPL
 (['"])(.*?[^\\])?(\\\\)*(\1)  STRING
 true|false                    BOOLEAN
 [0-9]+\.[0-9]+                REAL
 [0-9]+                        INTEGER
-[\$a-zA-Z_][a-zA-Z0-9_]*      IDENTIFIER
+[a-zA-Z_][a-zA-Z0-9_]*        IDENTIFIER
 [;]                           SEMICOLON
 \\                            SEPARATOR

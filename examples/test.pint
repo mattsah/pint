@@ -52,7 +52,9 @@ end
 {
 	[param] string @msg A reference to a string
 }
-register foo: function(@msg: string): void
+register foo: function(@$msg: string): function
 begin
 	io.writeLn(msg);
+
+	return function() = 'test';
 end
