@@ -413,6 +413,18 @@ expr
   | '(' expr ')' {
     $$ = std::make_shared<Node>();
   }
+	| expr '+' expr {
+		$$ = std::make_shared<Node>();
+	}
+	| expr '-' expr {
+		$$ = std::make_shared<Node>();
+	}
+	| expr '*' expr {
+		$$ = std::make_shared<Node>();
+	}
+	| expr '/' expr {
+		$$ = std::make_shared<Node>();
+	}
 ;
 
 expr_list

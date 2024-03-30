@@ -56,5 +56,7 @@ register foo: function(@$msg: string): function
 begin
 	io.writeLn(msg);
 
-	return function() = 'test';
+	return (
+		function() = 'test'
+	);
 end
