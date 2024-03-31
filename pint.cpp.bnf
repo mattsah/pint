@@ -19,6 +19,7 @@
 %token SEPARATOR
 
 %right '='
+%left  '.'
 %left  ADD SUB
 %left  MUL DIV
 
@@ -125,33 +126,6 @@ register_stmt
     $$ = std::make_shared<Node>();
   }
   | "register" identifier ':' "implementation" form_decl "begin" block "end" {
-    $$ = std::make_shared<Node>();
-  }
-;
-
-literal
-  : base_literal {
-    $$ = std::make_shared<Node>();
-  }
-  | array_literal {
-    $$ = std::make_shared<Node>();
-  }
-  | object_literal {
-    $$ = std::make_shared<Node>();
-  }
-;
-
-base_literal
-  : REAL {
-    $$ = std::make_shared<Node>();
-  }
-  | INTEGER {
-    $$ = std::make_shared<Node>();
-  }
-  | BOOLEAN {
-    $$ = std::make_shared<Node>();
-  }
-  | STRING {
     $$ = std::make_shared<Node>();
   }
 ;
@@ -269,7 +243,6 @@ func_decl
   }
 ;
 
-/*
 cons_decl
 	: %empty {
 		$$ = std::make_shared<Node>();
@@ -281,7 +254,6 @@ cons_decl
     $$ = std::make_shared<Node>();
   }
 ;
-*/
 
 var
   : identifier {
@@ -376,10 +348,13 @@ type_list
 ;
 
 mark
-	: symbol {
+	: identifier {
 		$$ = std::make_shared<Node>();
 	}
 	| mark '[' expr ']' {
+		$$ = std::make_shared<Node>();
+	}
+	| mark '.' identifier {
 		$$ = std::make_shared<Node>();
 	}
 ;
@@ -394,22 +369,52 @@ mark_list
 	}
 ;
 
+literal
+  : data_literal
+	| call_literal
+;
+
+data_literal
+	: base_literal
+	| index_literal
+	| object_literal
+	| data_literal '.' identifier {
+		$$ = std::make_shared<Node>();
+	}
+	| data_literal '.' identifier '(' exprs ')' {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+index_literal
+	: STRING
+	| BOOLEAN
+	| array_literal
+	| index_literal '[' expr ']' {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+base_literal
+  : REAL
+	| INTEGER
+;
+
+
+call_literal
+	: function_literal
+;
+
 expr
-  : literal {
-    $$ = std::make_shared<Node>();
-  }
-	| mark {
+	: literal {
 		$$ = std::make_shared<Node>();
 	}
-	| mark '(' params ')' {
+  | mark {
 		$$ = std::make_shared<Node>();
 	}
-	| function_literal {
+	| mark '(' exprs ')' {
 		$$ = std::make_shared<Node>();
 	}
-  | '(' expr ')' {
-    $$ = std::make_shared<Node>();
-  }
 	| expr ADD expr {
 		$$ = std::make_shared<Node>();
 	}
@@ -422,13 +427,13 @@ expr
 	| expr DIV expr {
 		$$ = std::make_shared<Node>();
 	}
+  | '(' expr ')' {
+    $$ = std::make_shared<Node>();
+  }
 ;
 
 expr_list
-  : %empty {
-    $$ = std::make_shared<ListNode>();
-  }
-  | expr {
+  : expr {
     $$ = std::make_shared<ListNode>($1);
   }
   | expr_list ',' expr {
@@ -437,29 +442,19 @@ expr_list
   }
 ;
 
+exprs
+  : %empty {
+    $$ = std::make_shared<ListNode>();
+  }
+	| expr_list {
+		$$ = $1;
+	}
+;
+
 return
 	: "return" expr {
 		$$ = std::make_shared<Node>();
 	}
-;
-
-param_list
-  : expr {
-    $$ = std::make_shared<ListNode>($1);
-  }
-  | param_list ',' expr {
-    as(ListNode, $1)->list.push_back($3);
-    $$ = $1;
-  }
-;
-
-params
-  : %empty {
-    $$ = std::make_shared<ListNode>();
-  }
-  | param_list {
-    $$ = $1;
-  }
 ;
 
 size
@@ -557,7 +552,7 @@ record_list
 ;
 
 array_literal
-  : '[' expr_list ']' {
+  : '[' exprs ']' {
     $$ = std::make_shared<Node>();
   }
 ;
