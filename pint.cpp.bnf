@@ -25,19 +25,19 @@
 
 %%
 
-program
+unit
   : %empty {
     $$ = std::make_shared<ListNode>();
   }
-  | program program_line {
+  | unit unit_line {
 		as(ListNode, $1)->list.push_back($2);
 		$$ = $1;
   }
 ;
 
-program_line
+unit_line
   : unit_stmt
-  | uses_stmt
+	| uses_stmt
   | register_stmt
   | var_decl_stmt
   | set_decl_stmt
@@ -347,72 +347,47 @@ type_list
   }
 ;
 
-mark
-	: identifier {
-		$$ = std::make_shared<Node>();
-	}
-	| mark '[' expr ']' {
-		$$ = std::make_shared<Node>();
-	}
-	| mark '.' identifier {
-		$$ = std::make_shared<Node>();
-	}
-;
-
-mark_list
-	: mark {
-		$$ = std::make_shared<ListNode>($1);
-	}
-	| mark_list ',' mark {
-		as(ListNode, $1)->list.push_back($3);
-		$$ = $1;
-	}
-;
-
 literal
-  : data_literal
-	| call_literal
-;
-
-data_literal
-	: base_literal
-	| index_literal
-	| object_literal
-	| data_literal '.' identifier {
+  : REAL {
 		$$ = std::make_shared<Node>();
 	}
-	| data_literal '.' identifier '(' exprs ')' {
+	| INTEGER {
 		$$ = std::make_shared<Node>();
 	}
-;
-
-index_literal
-	: STRING
-	| BOOLEAN
-	| array_literal
-	| index_literal '[' expr ']' {
+	| STRING {
+		$$ = std::make_shared<Node>();
+	}
+	| BOOLEAN {
+		$$ = std::make_shared<Node>();
+	}
+	| array_literal {
+		$$ = std::make_shared<Node>();
+	}
+	| object_literal {
 		$$ = std::make_shared<Node>();
 	}
 ;
 
-base_literal
-  : REAL
-	| INTEGER
-;
-
-
-call_literal
-	: function_literal
-;
-
-expr
+value
 	: literal {
 		$$ = std::make_shared<Node>();
 	}
-  | mark {
+	| identifier {
 		$$ = std::make_shared<Node>();
 	}
-	| mark '(' exprs ')' {
+	| value '[' expr ']' {
+		$$ = std::make_shared<Node>();
+	}
+	| value '.' identifier {
+		$$ = std::make_shared<Node>();
+	}
+	| value '.' identifier '(' exprs ')' {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+expr
+	: value {
 		$$ = std::make_shared<Node>();
 	}
 	| expr ADD expr {
@@ -501,6 +476,28 @@ set_decl
   : "set" var_list {
     $$ = std::make_shared<Node>();
   }
+;
+
+mark
+	: identifier {
+		$$ = std::make_shared<Node>();
+	}
+	| mark '[' expr ']' {
+		$$ = std::make_shared<Node>();
+	}
+	| mark '.' identifier {
+		$$ = std::make_shared<Node>();
+	}
+;
+
+mark_list
+	: mark {
+		$$ = std::make_shared<ListNode>($1);
+	}
+	| mark_list ',' mark {
+		as(ListNode, $1)->list.push_back($3);
+		$$ = $1;
+	}
 ;
 
 assign

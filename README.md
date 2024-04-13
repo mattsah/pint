@@ -224,6 +224,8 @@ else then
 	io.writeLn('x is greater than 5');
 ```
 
+It is possible to mix `begin` and `then`.
+
 #### Not
 
 ```pascal
