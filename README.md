@@ -24,16 +24,16 @@ end
 Variables can be declared separately or declared during assignment.  The universal declaration format is the following.
 
 ```erlang
-var <name>:[<type>][([<size>])][[[<length>]]];
+var <name>:[<type>][([<size>])][[[<span>]]];
 ```
 
 When a variable is declared, the signature of the declaration says a lot about the variable.  There are three main concepts to cover here:
 
-#### Type vs. Size vs. Length
+#### Type vs. Size vs. Span
 
 Values have both a type and a size.  This is contrast to other languages where the size is often part of type.  What the size refers to depends on the type, for numbers it refers to its bit-length, for characters and strings it refers to the UTF code unit size.  Sizes should not be thought of as the amount of memory consumed.
 
-Length only applies to arrays.  The length is the logical length of the thing.  For an array of characters (aka: a string), this would be the length of the string.  Since a UTF-8 or UTF-16 string can have multi-byte characters, the length is not equivalent, still, to the amount of memory consumed.
+The span is the logical length of the thing.  For an array of characters (aka: a string), this would be the length of the string.  Since a UTF-8 or UTF-16 string can have multi-byte characters, the span is not equivalent, still, to the amount of memory consumed.
 
 #### Explicit vs. Implicit
 
@@ -41,7 +41,7 @@ Both the type and size of a variable can be explicitly or implicitly declared.  
 
 #### Fixed vs. Dynamic
 
-Both the type, size, and length of a variable can also be fixed or dynamic.  If a type of a variable is fixed, whether the type was determined explicitly (at declaration) or implicitly (at initialization) it cannot be changed.  A dynamic type, by contrast, means that the type of the variable can change.  The same logic applies to size and length.
+The type, size, and span of a variable can also be fixed or dynamic.  If a type of a variable is fixed, whether the type was determined explicitly (at declaration) or implicitly (at initialization) it cannot be changed.  A dynamic type, by contrast, means that the type of the variable can change.  The same logic applies to size and span.
 
 #### Examples
 
@@ -93,35 +93,41 @@ Any of the above declaration styles can turned into an array by appending `[]`:
 var x: integer(8)[];
 ```
 
-You can fix the length of an array by adding a number inside the brackets:
+You can fix the span of an array by adding a number inside the brackets:
 
 ```pascal
 var x: integer(8)[5];
 ```
 
-Strings are just dynamic length arrays of characters.  The following two declaration are equivalent:
+Strings are just arrays of characters with a dynamic span.  The following two declaration are equivalent:
 
 ```pascal
 var x: char(8)[];
 var y: string(8);
 ```
 
-Accordingly, if you want a fixed length string (as opposed to an array of strings), you need to use something like the following:
+Accordingly, if you want a fixed span string (as opposed to an array of strings), you need to use something like the following:
 
 ```pascal
 var x: char(8)[5]
 ```
 
-The following would created a fixed length array of strings (themselves of dynamic length):
+The following would created a array of strings with a fixed span (the strings themselves have a dynamic span):
 
 ````pascal
 var x: string(8)[5];
 ````
 
-Similarly a boolean value declared as follows would result in an array of booleans with a size of one and an array length equivalent to the specified size:
+Similarly a boolean value declared as follows would result in an array of booleans with a size of one and a span equivalent to the specified size:
 
 ```pascal
 var x: boolean(8);
+```
+
+You can declare multiple variables at once with a comma:
+
+```pascal
+var x, y, z: integer(8);
 ```
 
 ### Types and Default Sizes
@@ -135,7 +141,7 @@ Whenever a variable is declared without explicit size, or when a constant of a c
 | `real`     | 32           | Signed float values.  Default for any `var x:real` or constant (in code), e.g. `5.5`. |
 | `char`     | 8            | Character value, size indicates multi-byte unit size. Characters are UTF-8.  Default for any `var x:char` or constant single character string (in code), e.g. `'c'`. |
 | `string`   | 8            | String value, size indicates multi-byte unit size. Strings are UTF-8.  Default for any `var x:string` or constant multi-character string (in code), e.g. `'string`'. |
-| `boolean`  | 1            | Boolean value, size > 1 indicates a bitmask, equivalent to `var x:boolean(1)[<size>]` |
+| `boolean`  | 1            | Boolean value, size > 1 indicates a bitmask, equivalent to `var x:boolean(1)[<span>]` |
 
 ### Assignment
 
@@ -153,23 +159,61 @@ var x: integer(8);
 x = 5;
 ```
 
+You can assign multiple variables at once by separating them with a comma:
+
+```pascal
+var x, y: integer(8);
+
+x, y = 5;
+```
+
+### Constants
+
+To declare a constant, use the `set` keyword instead:
+
+```pascal
+set x: integer(8) = 5;
+```
+
+You can still declare constants separately, however, they can only be assigned once.
+
+### Dynamic Identifiers
+
+You can use the `$` symbol to resolve identifiers dynamically.  For example:
+
+```pascal
+set foo  := "bar";
+set $foo := "foo";
+
+io.writeLn('the value of ', foo, ' is ', $foo);
+```
+
+### References
+
+You can use the `@` symbol to declare a reference.
+
+```pascal
+set foo  := "bar";
+set @bar := foo;
+
+io.writeLn('the value of bar is ', bar);
+```
+
 ### Conditions
 
-Block style conditionals:
+Block style multi-statement conditionals use the `begin` keyword and require termination either by the next condition or `end`.
 
 ```pascal
 if x < 5 begin
 	io.writeln('x is less than 5');
-end
 else if x == 5 begin
-	io.writeLn('x is equal to 5')
-end
+	io.writeLn('x is equal to 5');
 else begin
 	io.writeLn('x is greater than 5');
 end
 ```
 
-Because the previous example only has a single statement it can be simplified:
+Single statement conditions use the `then` keyword and are terminated by the semi-colon:
 
 ```pascal
 if x < 5 then
@@ -178,6 +222,13 @@ else if x == 5 then
 	io.writeLn('x is equal to 5');
 else then
 	io.writeLn('x is greater than 5');
+```
+
+#### Not
+
+```pascal
+if not x < 5 then
+	io.writeln('x is greater than or equal to 5');
 ```
 
 #### And
@@ -194,21 +245,54 @@ if x < 5 or x > 5 then
 	io.writeLn('x is not 5');
 ```
 
-#### Ternary
+#### Case
+
+```pascal
+var msg: string;
+
+case x begin
+	1:
+		msg = 'x is 1';
+	[2, 3, 4]:
+		msg = 'x is 2, 3, or 4';
+	5..10:
+		msg = 'x is >= 5, but <= 10';
+	else:
+		msg = 'x < 1 or > 10';
+end	
+```
+
+Case cases break by default.  If you want to continue to the next case use `continue`:
+
+```pascal
+case x begin
+	1:
+		continue;
+	2:
+		msg = 'x is 1 or 2';
+	3:
+		msg = 'x is 3';
+end
+		
+```
+
+You can use cases for conditional assignments as well, the `=>` syntax is used for single expression return:
+
+```pascal
+var msg: string = case x begin
+	1         => 'x is 1',
+	[2, 3, 4] => 'x is 2, 3, or 4',
+	5..10     => 'x is >= 5, but <= 10',
+	else      => 'x < 1 or > 10'
+end
+```
+
+Here's how you'd perform a ternary using them, the `then` keyword, which creates a simple either/or single expression return:
 
 ```pascal
 var msg: string = case x < 5
-	then 'x is less than 5'
+	then 'x is less than 5',
 	else 'x is greater than or equal to 5';
-
-io.writLn(msg);
-```
-
-#### Not
-
-```pascal
-if not x < 5 then
-	io.writeln('x is greater than or equal to 5')
 ```
 
 ### Loops
@@ -235,11 +319,32 @@ for var x in 'string' do
 	io.writeLn('x is equal to ', x);
 ```
 
-Iterating over values in an array:
+Iterating over values _in_ an array:
 
 ```pascal
 for var x in [1, 2, 3, 4, 5] do
 	io.writeLn('x is equal to ', x);
+```
+
+Iterating over the indexes _of_ an array:
+
+```pascal
+for var x of [1, 2, 3, 4, 5] do
+	io.writeLn('data @ ', x, ' is equal to ', data[x]);
+```
+
+Iterating over the values _in_ an object:
+
+```pascal
+for var x in (foo := "bar", bar := "foo") do
+	io.writeLn('x is equal to ', x);
+```
+
+Iterating over the keys _of_ an object:
+
+```pascal
+for var x of (foo := "bar", bar := "foo") do
+	io.writeLn('data @ ', x, ' is equal to ', data.$x);
 ```
 
 A basic while loop:
@@ -331,12 +436,12 @@ uses
 
 ### Register Modules
 
-Once a unit is declared, you can begin registering modules (functions, types, etc) within that unit.  The shorted possible PINT program would look like the following:/
+Once a unit is declared, you can begin registering modules (functions, types, etc) within that unit.  The shortest possible PINT program would look like the following:
 
 ```pascal
 unit main;
 
-register main: function = 0;
+register main: function => 0;
 ```
 
 ### Functions
@@ -402,9 +507,26 @@ until
 	not error;
 ```
 
+#### Anonymous Functions
+
+```pascal
+[1, 2, 3, 4, 5].map(function(x) => x + 1)
+```
+
+```pascal
+var callback := (
+	function(x)
+	begin
+		return x + 1;
+	end
+);
+
+[1, 2, 3, 4, 5].map(callback);
+```
+
 ## Object Oriented Constructs
 
-In this next section, we'll examine the object-oriented constructs of PINT.  To elucidate this, we'll imagine things in the context of trying to build a logging library.  Let's start with basic objects.
+In this next section, we'll examine the object-oriented constructs of PINT.
 
 ### Objects
 
@@ -425,7 +547,7 @@ var context := (
 );
 ```
 
-To access an object property you can use the `.` notation when the identifier is static.  If the identifier needs to be a variable you can use `$` character.  The below code would return `context.left`:
+To access an object property you can use the `.` notation when the identifier is static.  You can also use the dynamic identifiers to access properties:
 
 ```pascal
 var key := 'left';
@@ -438,23 +560,25 @@ return context.$key;
 You can define custom types which are a union of multiple types using the `type` form.
 
 ```pascal
-unit ContextLogger;
+unit Orm;
 
-register Context: type = (
-	object,
-	cardinal
+register Criteria: type(
+	integer,
+	string
 );
 ```
 
-Then use them:
+Extend them:
 
 ```pascal
 unit app;
 
-uses ContextLogger.Context;
+uses Orm;
 
-var context1: Context = 1;
-var context2: Context = (id := id);
+register ExtendedCriteria: type(
+	Orm.Criteria,
+	object
+);
 ```
 
 ### Labels
@@ -464,22 +588,23 @@ Labels are PINT's form of enumerators.
 ```pascal
 unit Logger;
 
-register Level: label = (
+register Level: label(
 	INFO,
 	WARNING,
 	ERROR
 );
 ```
 
-If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend labels:
+If you're extending an existing library, it's often the case that you may need to add members.  Accordingly you can extend labels too:
 
 ```pascal
 unit ContextLogger;
 
 uses Logger;
 
-register Level: label(Logger.Level) = (
-	CONTEXT
+register Level: label(
+	Logger.Level,
+	CRITICAL
 );
 ```
 
@@ -498,7 +623,7 @@ unit Logger;
 
 uses crono.time;
 
-register Entry: record = (
+register Entry: record(
 	text: string,
 	level: LogLevel,
 	timestamp: cardinal default time()
@@ -512,7 +637,8 @@ unit ContextLogger;
 
 uses Logger;
 
-register Entry: record(Logger.Entry) = (
+register Entry: record(
+	Logger.Entry,
 	context: Context
 );
 ```
@@ -570,30 +696,29 @@ uses io, crono, json, ContextLogger(Log, Entry);
 
 register FileLogger(Log): implementation
 begin
-	set log: function(entry: Entry): ?Log
-	begin
-		var today := new crono.Date('today');
-		var fd    := io.openFile(
-			'storage/logs/%s.log'.format(today.format('Y-m-d')),
-	        io.Mode#APPEND
-		);
-		
-		if not fd then
-			return = new Error('Could not open log file');
-		else begin
-			io.writeLine('%s: %s %s'.format(
-				entry.level,
-				entry.txt,
-				json.encode(entry.context)
-			);
+	public:
+        set log: function(entry: Entry): ?Log
+        begin
+            var today := new crono.Date('today');
+            var fd    := io.openFile(
+                'storage/logs/%s.log'.format(today.format('Y-m-d')),
+                io.Mode#APPEND
+            );
 
-			io.close(handle);
-			
-			return = this;
-		end
-		
-		
-	end
+            if not fd then
+                return = new Error('Could not open log file');
+            else begin
+                io.writeLine('%s: %s %s'.format(
+                    entry.level,
+                    entry.txt,
+                    json.encode(entry.context)
+                );
+
+                io.close(handle);
+
+                return = this;
+            end
+        end
 end
 ```
 
@@ -658,7 +783,7 @@ begin
 		set @manager: Manager;
 
 	public:
-		set constructor(@manager: Manager): void
+		constructor(@manager: Manager): void
 		begin
 			this.manager = manager;
 		end
@@ -675,7 +800,7 @@ begin
 		set repositories: object;
 
 	public:
-		set constructor()
+		constructor()
 		begin
 			this.repositories = new object();
 		end
